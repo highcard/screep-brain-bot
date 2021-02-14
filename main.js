@@ -52,7 +52,7 @@ module.exports.loop = function () {
             curRoom.memory.my = curRoom.controller ? curRoom.controller.my : false;
         }
         if (curRoom.memory.owner == undefined) {
-            curRoom.memory.owner = curRoom.controller ? curRoom.controller.owner.username : null;
+            curRoom.memory.owner = !(curRoom.controller && curRoom.controller.owner) ? "none" : curRoom.controller.owner.username;
         }
     }
     // END MEMORY CLEANUP

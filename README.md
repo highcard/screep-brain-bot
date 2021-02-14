@@ -18,5 +18,6 @@ Kill all humans.
 
 Design patterns are solutions to common problems, not templates.
 
-Judge thee not by thy variable names, lest ye be judged for yours.
+Variable names are hard sometimes.
+
 
