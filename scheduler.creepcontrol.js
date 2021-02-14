@@ -9,6 +9,7 @@ const SchedWorkQueue = require("scheduler.workqueue");
 
 module.exports = function (room) {
     let scheduler = new SchedWorkQueue(room);
+
     this.run = function() {        
         // Run creep behaviors for all creeps controlled by room Scheduler
         let creeps = _.filter(Game.creeps, (c) => c.memory.home_room == room.name);
