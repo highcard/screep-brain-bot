@@ -11,9 +11,8 @@ const debug = new Debugger("buildorder.queue");
 
 const BuildFactory = require("buildorder.taskfactory");
 
-module.exports = function(room) {
+module.exports = function() {
     var queue = [];
-    this.room = room;
     
     function validateArgs(opts) {
         let name = opts.name;
@@ -39,6 +38,7 @@ module.exports = function(room) {
     }
 
     this.addCmd = function(opts) {
+        debug.log("adding command");
         let cmd = new BuildFactory(opts);
         if(validateArgs(cmd)) {
             queue.push(cmd);
@@ -51,11 +51,11 @@ module.exports = function(room) {
         while (queue.length > 0) {
             let cmd = queue.shift();
             if (cmd.satisfied()) {
-                debug.logInfo(`satisfied`, `[${room.name}][${cmd.name}]`)
+                debug.logInfo(`satisfied`, `[${cmd.name}]`)
                 continue;
             }
             if (cmd.prereq()) {
-                debug.logInfo(`executing`, `[${room.name}][${cmd.name}]`)
+                debug.logInfo(`executing`, `[${cmd.name}]`)
                 let retval = cmd.run();
                 if (retval != 0) {
                     break;
@@ -64,7 +64,7 @@ module.exports = function(room) {
                     break;
                 }
             } else {
-                debug.logInfo(`failed_prereqs`, `[${room.name}][${cmd.name}]`);
+                debug.logInfo(`failed_prereqs`, `[${cmd.name}]`);
                 break;
             }
         }

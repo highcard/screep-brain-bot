@@ -10,13 +10,7 @@
 const Debugger = require("utils.debug");
 const debug = new Debugger("buildorder.taskfactory");
 
-const LO_EnergyPath = require("layout.energy_path");
-const LO_Extensions = require("layout.extension");
-const LO_MineContainers = require("layout.minecontainers")
-
-const BO_Bootup = require("build.bootup");
-const BO_Miner = require("build.miner");
-const BO_Worker = require("build.worker");
+const BO_BootupWorker = require("build.bootupworker");
 
 module.exports = function(opts) {
     let cmd = null;
@@ -24,23 +18,8 @@ module.exports = function(opts) {
         debug.logError(`[build.factory] warning: ${opts.cmd} command has no name`);
     }
     switch(opts.cmd) {
-        case "energy_path":
-            cmd = new LO_EnergyPath(opts);
-            break;
-        case "bootup":
-            cmd = new BO_Bootup(opts);
-            break;
-        case "worker":
-            cmd = new BO_Worker(opts);
-            break;
-        case "extensions":
-            cmd = new LO_Extensions(opts);
-            break;
-        case "mine_containers":
-            cmd = new LO_MineContainers(opts);
-            break;
-        case "miners":
-            cmd = new BO_Miner(opts);
+        case "bootupworker":
+            cmd = new BO_BootupWorker({room: opts.room, cmd: opts.cmd});
             break;
         default:
             debug.logError(`${[opts.cmd]} not recognized`);

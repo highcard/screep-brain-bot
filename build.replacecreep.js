@@ -8,7 +8,7 @@
  */
 
 
-const CreepBuilder = require("utils.creepbuilder");
+const CreepBuilder = require("creep.factory");
 
 
  // UNUSED. NOT NEEDED (YET)

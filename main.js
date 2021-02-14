@@ -13,9 +13,10 @@ const CreepMemory = require("memory.creeps");
 
 module.exports.loop = function () {
 
+    debug.logInfo("============");
+
     //let mapeval = new WorldMapControl();
     //mapeval.run();
-
     // BEGIN MEMORY CLEANUP -- Move this stuff elsewhere
 
     let roomscanner = new RoomMemory();

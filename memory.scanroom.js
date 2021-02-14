@@ -2,6 +2,7 @@ const Debugger = require("utils.debug");
 const debug = new Debugger("memory.scanroom");
 
 const SchedCreepControl = require("scheduler.creepcontrol");
+const SchedBootstrapDirector = require("scheduler.bootstrap");
 
 module.exports = function() {
     // Room Memory Init <== Consider moving this elsewhere.
@@ -65,44 +66,40 @@ module.exports = function() {
 
     this.evaluate_all = function() {
         for (let room in Memory.rooms) {
-            console.log(room);
             this.evaluate_room(room);
         }
     }
 
     this.evaluate_room = function(room) {
-        debug.logError(room, "evaluate_room");
         let directive = "";
         if (!Memory.rooms[room].directing) {
-            console.log('hit');
-            console.log(Game.rooms[room].my);
-            Memory.rooms[room].directing = Game.rooms[room].my;
+            Memory.rooms[room].directing = Memory.rooms[room].my;
         }
         if (Memory.rooms[room] && Memory.rooms[room].directing) {
-            console.log("hit");
             let spawnnum = Memory.rooms[room].spawns.length;
             if (spawnnum > 0) {
                 directive = DIR_BOOTSTRAP;
             } else {
                 directive = DIR_RESERVE;
             }
+            Memory.rooms[room].directive = directive;
         }
     }
 
 
     this.run_rooms = function() {
         for (let room in Memory.rooms) {
-            console.log(room);
             if (Memory.rooms[room].directing) {
                 let creepcontrol;
+                let director;
                 switch (Memory.rooms[room].directive) {
                     case DIR_NONE:
                         // do nothing
                         break;
                     case DIR_BOOTSTRAP:
-                        console.log("hit");
-                        debug.logInfo("hit DIR_BOOTSTRAP", "run_rooms")
-                        creepcontrol = creepcontrol(Game.rooms[room]);
+                        debug.logInfo("Running Bootstrap Creepcontrol", "run_rooms")
+                        creepcontrol = new SchedCreepControl(Game.rooms[room]);
+                        director = new SchedBootstrapDirector(Game.rooms[room]);
                         // do something bootstrappy
                         break;
                     case DIR_RESERVE:
@@ -110,6 +107,7 @@ module.exports = function() {
                     case DIR_COLONIZE:
                         break;
                 }
+                if (director) director.run();
                 if (creepcontrol) creepcontrol.run();
             }
         }

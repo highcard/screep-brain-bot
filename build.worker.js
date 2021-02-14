@@ -9,7 +9,7 @@
 const Debugger = require("utils.debug");
 const debug = new Debugger("build.worker");
 
-const CreepBuilder = require("utils.creepbuilder");
+const CreepBuilder = require("creep.factory");
 
 module.exports = function(opts){
     let buildNum = opts.num;
