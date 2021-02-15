@@ -21,7 +21,6 @@ module.exports = function(room) {
             debug.logError("cmd has no name");
         }
         let required = ["satisfied", "prereq", "run", "cmd"];
-        let missing = [];
         let valid = true;
         for (let prop in required) {
             let cur_prop = required[prop];
@@ -56,13 +55,7 @@ module.exports = function(room) {
             }
             if (cmd.prereq()) {
                 debug.logInfo(`executing`, `[${room.name}][${cmd.name}]`)
-                let retval = cmd.run();
-                if (retval != 0) {
-                    break;
-                }
-                if (retval == 0) {
-                    break;
-                }
+                cmd.run();
             } else {
                 debug.logInfo(`failed_prereqs`, `[${room.name}][${cmd.name}]`);
                 break;
