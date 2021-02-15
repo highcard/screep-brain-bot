@@ -1,6 +1,6 @@
 ### screeps-brain-bot by highCard
 
-currently playingn/testing. constant wip until it's not.
+currently playing/testing. constant wip until it's not.
 
 ## build philsophy
 
