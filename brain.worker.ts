@@ -39,7 +39,64 @@ module.exports = function(creep) {
         }
     }
 
-    const set_get_target_source = function() {    
+
+
+    const aggregate_container = function (container) {
+        let energy = container.store.getUsedCapacity(RESOURCE_ENERGY);
+        let floor_energy = container.pos.lookFor(LOOK_ENERGY);
+        if (floor_energy.length > 0) {
+            energy += floor_energy[0].amount;
+        }
+        return energy;
+    }
+
+    const set_get_target_container = function() {
+        debug.logInfo(`hit`, `set_get_target_container`)
+        let room = Game.rooms[creep.memory.home_room];        
+        let containers = room.find(FIND_STRUCTURES, 
+            {filter: s => s.structureType == STRUCTURE_CONTAINER 
+                && s.store.getUsedCapacity(RESOURCE_ENERGY) > 0});
+        if (containers.length == 0) {
+            return false;
+        }
+        let container;        
+        container = _.max(containers, aggregate_container);
+        creep.memory.get_target = {id: container.id, type: TARGET_CONTAINER};
+        return true;
+    }
+
+
+    const set_get_target_dropped = function() {
+        debug.logInfo(`hit`, `set_get_target_dropped`)
+        let room = Game.rooms[creep.memory.home_room];
+        let dropped = room.find(FIND_DROPPED_RESOURCES, {
+            filter: r => r.resourceType == RESOURCE_ENERGY 
+                    && r.pos.lookFor(LOOK_STRUCTURES).length == 0
+        });
+        if (dropped.length > 0) {
+            dropped.sort(r => r.amount);
+            creep.memory.get_target = {id: dropped[0].id, type: TARGET_DROPPED};
+            return true;
+        }
+        return false;
+    }
+
+    const set_get_target_tombstone = function() {
+        debug.logInfo(`hit`, `set_get_target_tombstone`);
+        let room = Game.rooms[creep.memory.home_room];
+        let tombstones = room.find(FIND_TOMBSTONES, {
+           filter: t => t.store.getUsedCapacity(RESOURCE_ENERGY) > 0
+        });
+        if (tombstones.length > 0) {
+            tombstones.sort(r => r.store.getUsedCapacity(RESOURCE_ENERGY));
+            creep.memory.get_target = {id: tombstones[0].id, type: TARGET_TOMB};
+            return true;
+        }
+        return false;
+    }
+
+    const set_get_target_source = function() {
+        debug.logInfo(`hit`, `set_get_target_source`);
         let room = Game.rooms[creep.memory.home_room];
         let sources = room.memory.sources;
         let room_creeps = _.filter(Game.creeps, function(c) {
@@ -66,57 +123,6 @@ module.exports = function(creep) {
         }
         creep.memory.get_target = {id: min_source, type: TARGET_SOURCE };
         return true;        
-    }
-
-    const aggregate_container = function (container) {
-        let energy = container.store.getUsedCapacity(RESOURCE_ENERGY);
-        let floor_energy = container.pos.lookFor(LOOK_ENERGY);
-        if (floor_energy.length > 0) {
-            energy += floor_energy[0].amount;
-        }
-        return energy;
-    }
-
-    const set_get_target_container = function() {
-        let room = Game.rooms[creep.memory.home_room];        
-        let containers = room.find(FIND_STRUCTURES, 
-            {filter: s => s.structureType == STRUCTURE_CONTAINER 
-                && s.store.getUsedCapacity(RESOURCE_ENERGY) > 0});
-        let container;
-        if (containers.length == 0) {
-            return false;
-        }
-        container = _.max(containers, aggregate_container);
-        creep.memory.get_target = {id: container.id, type: TARGET_CONTAINER};
-        return true;
-    }
-
-
-    const set_get_target_dropped = function() {
-        let room = Game.rooms[creep.memory.home_room];
-        let dropped = room.find(FIND_DROPPED_RESOURCES, {
-            filter: r => r.resourceType == RESOURCE_ENERGY 
-                    && r.pos.lookFor(LOOK_STRUCTURES).length == 0
-        });
-        if (dropped.length > 0) {
-            dropped.sort(r => r.amount);
-            creep.memory.get_target = {id: dropped[0].id, type: TARGET_DROPPED};
-            return true;
-        }
-        return false;
-    }
-
-    const set_get_target_tombstone = function() {
-        let room = Game.rooms[creep.memory.home_room];
-        let tombstones = room.find(FIND_TOMBSTONES, {
-           filter: t => t.store.getUsedCapacity(RESOURCE_ENERGY) > 0
-        });
-        if (tombstones.length > 0) {
-            tombstones.sort(r => r.store.getUsedCapacity(RESOURCE_ENERGY));
-            creep.memory.get_target = {id: tombstones[0].id, type: TARGET_TOMB};
-            return true;
-        }
-        return false;
     }
 
     const set_get_target = function() {
@@ -224,6 +230,9 @@ module.exports = function(creep) {
     function validate_get_target() {
         if (!creep.memory.get_target || !Game.getObjectById(creep.memory.get_target.id)) {
             set_get_target();
+        }
+        if (creep.memory.get_target == null) {
+            return;
         }
         let target = Game.getObjectById(creep.memory.get_target.id);
         if (!target) {

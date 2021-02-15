@@ -61,7 +61,7 @@ module.exports = function(opts){
             energy: room.energyAvailable,
             memory: {
                 get_target: null,
-                set_target: null,
+                put_target: null,
                 task: null,
                 idle: true
             }
