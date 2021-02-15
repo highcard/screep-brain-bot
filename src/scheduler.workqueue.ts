@@ -36,59 +36,6 @@ module.exports = function(room){
         min_assign: 1
     });
 
-    tasklist.push({
-        task_type: TASK_SPAWNER,
-        min_assign: energyDeficitRatio > .25 ? 2 : 0
-    })
-
-    tasklist.push({
-        task_type: TASK_SPAWNER,
-        min_assign: energyDeficitRatio > .5 ? 3 : 0 
-    });    
-
-    tasklist.push({
-        task_type: TASK_CONTROLLER,
-        min_assign: 2
-    });
-
-    tasklist.push({
-        task_type: TASK_BUILDER,
-        min_assign: Math.min(sites.length, 4)
-    })
-
-    tasklist.push({
-        task_type: TASK_CONTROLLER,
-        min_assign: 3
-    });
-
-    tasklist.push({
-        task_type: TASK_REPAIR,
-        min_assign: Math.ceil(structureHitDeficit / 200)
-    })
-
-    tasklist.push({
-        task_type: TASK_SPAWNER,
-        min_assign: energyDeficitRatio > .5 ? 4 : 0 
-    })
-
-    tasklist.push({
-        task_type: TASK_CONTROLLER,
-        min_assign: 5
-    });
-
-    // RCL 3
-
-    tasklist.push({
-        task_type: TASK_WALLREPAIR,
-        min_assign: Math.ceil(walls.length / 20)
-    });
-
-    // CATCHALL TODO: Figureout better solution for upper bounds
-    tasklist.push({
-        task_type: TASK_CONTROLLER,
-        min_assign: 50
-    })
-
 
     this.get_next_task = function() {
         for (let t in tasklist) {

@@ -18,5 +18,16 @@ Kill all humans.
 
 Design patterns are solutions to common problems, not templates.
 
-Judge thee not by thy variable names, lest ye be judged for yours.
+Variable names are hard sometimes.
 
+## dependencies
+
+https://github.com/screepers/screeps-typescript-starter
+
+```
+
+
+## todo
+
+* Finish TS refactor
+* Write unit tests in Jest

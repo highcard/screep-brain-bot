@@ -9,6 +9,7 @@ const SchedWorkQueue = require("scheduler.workqueue");
 
 module.exports = function (room) {
     let scheduler = new SchedWorkQueue(room);
+
     this.run = function() {        
         // Run creep behaviors for all creeps controlled by room Scheduler
         let creeps = _.filter(Game.creeps, (c) => c.memory.home_room == room.name);
@@ -23,10 +24,7 @@ module.exports = function (room) {
             // Set CreepBrain
             let found = true;
             switch(creep.memory.role) {
-                case "worker":
-                    if (creep.memory.task == undefined || creep.memory.task == null) {
-                        creep.memory.task = scheduler.get_next_task();
-                    }                    
+                case "worker":          
                     creep_brain = new BrainWorker(creep);
                     break;
                 case "miner":

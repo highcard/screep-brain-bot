@@ -10,7 +10,7 @@
 const Debugger = require("utils.debug");
 const debug = new Debugger("build.bootup");
 
-const CreepBuilder = require("utils.creepbuilder");
+const CreepBuilder = require("creep.factory");
 
 module.exports = function(opts){
     let buildNum = opts.num;
@@ -18,7 +18,8 @@ module.exports = function(opts){
     let room = opts.room;
     let role = "worker";
     this.cmd = opts.cmd;
-    
+    let queue = new BuildQueue(room);
+
     this.satisfied = function() {
         let curRoleCreeps = _.filter(Game.creeps, function(c) {
             return c.memory.role == role && c.memory.home_room == room.name
