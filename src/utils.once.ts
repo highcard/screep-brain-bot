@@ -1,7 +1,7 @@
-const Debugger = require("utils.debug");
-const debug = new Debugger("utils.once");
+import { Debugger } from "./utils.debug";
 
 module.exports = function(filename) {
+    let debug = new Debugger("utils.once");
     const memroot = "once";
 
     this.mem_init = function () {

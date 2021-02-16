@@ -24,6 +24,13 @@ Variable names are hard sometimes.
 
 https://github.com/screepers/screeps-typescript-starter
 
+Typescript types:
+
+```
+npm install @types/screeps
+npm install --save @types/node
+npm install --save-dev @types/lodash@3.10.2
+
 ```
 
 

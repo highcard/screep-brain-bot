@@ -1,34 +1,23 @@
 // import modules
 
-const Debugger = require("utils.debug");
-const debug = new Debugger("main");
+import * as Debugger from "./utils.debug";
 
-const SchedSpawnControl = require("scheduler.roomqueue");
-const SchedLayoutControl = require("scheduler.roomlayout");
+import * as WorldMapControl from "./map.evaluate";
+import * as RoomDirector from "./memory.scanroom";
+import {cleanup_creeps} from "./memory.creeps";
 
-
-const WorldMapControl = require("map.evaluate");
-const RoomMemory = require("memory.scanroom");
-const CreepMemory = require("memory.creeps");
 
 module.exports.loop = function () {
-
-    debug.logInfo("============");
+    console.log(`====Running Tick:${Game.time}=====`);
 
     //let mapeval = new WorldMapControl();
     //mapeval.run();
     // BEGIN MEMORY CLEANUP -- Move this stuff elsewhere
 
-    let roomscanner = new RoomMemory();
-    let creepcleanup = new CreepMemory();
+    cleanup_creeps();
 
-
-    creepcleanup.cleanup();
-
-    roomscanner.scan_visible_rooms();
-    roomscanner.evaluate_all();
-    roomscanner.run_rooms();
-
-
+    RoomDirector.scan_visible_rooms();
+    RoomDirector.evaluate_all();
+    RoomDirector.run_rooms();
 
 };

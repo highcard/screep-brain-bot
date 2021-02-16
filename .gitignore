@@ -1,3 +1,4 @@
 proj.*
+*.old
 node_modules/
 build/

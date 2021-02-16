@@ -1,31 +1,26 @@
-const Debugger = require("utils.debug");
-const debug = new Debugger("scheduler.bootstrap");
+import BuildQueue from "./buildorder.queue";
 
-const BuildQueue = require("buildorder.queue");
+export default class BootStrapDirector {
 
-module.exports = function(room) {
+    room : Room;
 
-    const rcl_1 = [
-        {
-            name: "bootupworker",
-            cmd: "bootupworker",
-            room: room
-        }
-    ];
-    const rcl_2 = [];
-    const rcl_3 = [];
-    const rcl_4 = [];
-    const rcl_5 = [];
+    constructor(room : Room) {
+        this.room = room;
+    }
 
-    this.run = function() {
-        debug.log("Running bootstrap");
-        debug.log(room);
+    run() {
+
+        // This should be moved out of run()
+        let rcl_1 = [
+            "bootupworker",
+        ];
+        // End move out of run();
+
         let queue = new BuildQueue();
         for (let cmd in rcl_1) {
-            queue.addCmd(rcl_1[cmd]);
+            queue.addCmd(this.room, rcl_1[cmd]);
         }
         queue.run();
     }
 
-    return this;
 }

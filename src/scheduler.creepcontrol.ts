@@ -1,23 +1,24 @@
-const Debugger = require("utils.debug");
-const debug = new Debugger("scheduler.creepcontrol");
+import { BrainWorker } from "./brain.worker";
+import { BrainMiner } from './brain.miner';
 
-const BrainWorker = require('brain.worker');
-const BrainMiner = require('brain.miner');
-const BrainHauler = require('brain.hauler');
 
-const SchedWorkQueue = require("scheduler.workqueue");
+export default class CreepControl {
 
-module.exports = function (room) {
-    let scheduler = new SchedWorkQueue(room);
+    room : Room;
+    scheduler : any; //  TODO: Fix This
 
-    this.run = function() {        
+    constructor(room: Room) {
+        this.room = room;
+    }
+
+
+    run() {        
         // Run creep behaviors for all creeps controlled by room Scheduler
-        let creeps = _.filter(Game.creeps, (c) => c.memory.home_room == room.name);
+        let creeps = _.filter(Game.creeps, (c) => c.memory.home_room == this.room.name);
         for (let c in creeps) {
             // Get current Creep 
             let creep = creeps[c];
             if (creep == null) {
-                debug.logError("creep not found");
                 continue;
             }
             let creep_brain;
@@ -31,10 +32,10 @@ module.exports = function (room) {
                     creep_brain = new BrainMiner(creep);
                     break;
                 case "hauler":
-                    creep_brain = new BrainHauler(creep);
+                    // NOT IMPLEMENTED
+                    // creep_brain = new BrainHauler(creep);
                     break;
                 default:
-                    debug.logError("no brain found", creep.name);
                     found = false;
             }
             // Run creepbrain for assigned role
@@ -42,10 +43,5 @@ module.exports = function (room) {
                 creep_brain.run();
             }
         }
-        for (let c in creeps) {
-            let creep = creeps[c];
-            debug.logInfo(`[${creep.name}][${creep.memory.role}][working:${creep.memory.working}][get:${Game.getObjectById(creep.memory.get_target)}][put:${Game.getObjectById(creep.memory.put_target)}][task:${creep.memory.task}]`);
-        }
     }
-    return this;
 }

@@ -1,10 +1,8 @@
-const Debugger = require("utils.debug");
-const Once = require("utils.once");
-const debug = new Debugger("map.evaluate");
-const once = new Once("map.evaluate");
+import {Debugger} from "./utils.debug";
 
 module.exports = function () {
 
+    let debug = new Debugger("map.evaluate");
     const memroot = "_worldeval";
 
     this.mem_init = function () {
@@ -20,7 +18,7 @@ module.exports = function () {
                 debug.logError("no rooms. you dun fukked up.");
                 return;
             }
-            Memory[memroot].rootroom = my_rooms.sort((a,b) => b.rcl - a.rcl)[0].name;
+            Memory[memroot].rootroom = my_rooms.sort((a,b) => b.controller.level - a.controller.level)[0].name;
         }
 
         const map = Game.map;

@@ -1,29 +1,38 @@
-module.exports = function(filename) {
-    const DEBUG_MEMROOT = "_debug"
-    const DEBUG_PROFILE = "foobar";
-    
-    const CTRL_KEYWORD = "ctrl"
-    
-    const LOG_ERROR = "log_error";
-    const LOG_INFO = "log_info";
+const DEBUG_MEMROOT = "_debug"
+const DEBUG_PROFILE = "foobar";
 
-    this.log = function(s, context) {
-        console.log(`[${filename}]${context ? "[" + context + "]" : ""} ${s}`);
+const CTRL_KEYWORD = "ctrl"
+
+const LOG_ERROR = "log_error";
+const LOG_INFO = "log_info";
+
+class Debugger {
+
+    filename : string;
+
+    constructor(filename: string) {
+        this.filename = filename;
+        this.mem_init();
+        this.parse_control();
     }
 
-    this.logError = function(s, context) {
-        if (Memory[DEBUG_MEMROOT][DEBUG_PROFILE][filename][LOG_ERROR] == true) {
+    log(s : string, context? : string) {
+        console.log(`[${this.filename}]${context ? "[" + context + "]" : ""} ${s}`);
+    }
+
+    logError(s : string, context? : string) {
+        if (Memory[DEBUG_MEMROOT][DEBUG_PROFILE][this.filename][LOG_ERROR] == true) {
             this.log(s, context);
         }
     }
 
-    this.logInfo = function(s, context) {
-        if (Memory[DEBUG_MEMROOT][DEBUG_PROFILE][filename][LOG_INFO] == true) {
+    logInfo(s : string, context? : string) {
+        if (Memory[DEBUG_MEMROOT][DEBUG_PROFILE][this.filename][LOG_INFO] == true) {
             this.log(s, context);
         }
     }
 
-    this.mem_init = function () {
+    mem_init() {
         if (Memory[DEBUG_MEMROOT] == undefined) {
             Memory[DEBUG_MEMROOT] = {
                 [CTRL_KEYWORD] : ""
@@ -32,23 +41,23 @@ module.exports = function(filename) {
         if (Memory[DEBUG_MEMROOT][DEBUG_PROFILE] == undefined) {
             Memory[DEBUG_MEMROOT][DEBUG_PROFILE] = {};
         }
-        if (Memory[DEBUG_MEMROOT][DEBUG_PROFILE][filename] == undefined) {
-            Memory[DEBUG_MEMROOT][DEBUG_PROFILE][filename] = {
-            id: filename,
+        if (Memory[DEBUG_MEMROOT][DEBUG_PROFILE][this.filename] == undefined) {
+            Memory[DEBUG_MEMROOT][DEBUG_PROFILE][this.filename] = {
+            id: this.filename,
             [LOG_ERROR]: true,
             [LOG_INFO]: true
             }
         }
     }
 
-    this.set_all = function(key, val) {
+    set_all(key : string, val : boolean ) {
         console.log(`[DEBUG CTRL] Setting ${key} to ${val}`);
         for (let file in Memory[DEBUG_MEMROOT][DEBUG_PROFILE]) {
             Memory[DEBUG_MEMROOT][DEBUG_PROFILE][file][key] = val;
         }
     }
 
-    this.parse_control = function() {
+    parse_control() {
         if (Memory[DEBUG_MEMROOT][CTRL_KEYWORD] != "") {
             switch(Memory[DEBUG_MEMROOT][CTRL_KEYWORD]) {
                 case "log_errors_on":
@@ -69,7 +78,6 @@ module.exports = function(filename) {
             Memory[DEBUG_MEMROOT][CTRL_KEYWORD] = "";
         }
     }
-    this.mem_init();
-    this.parse_control();
-    return this;
 }
+
+export { Debugger };

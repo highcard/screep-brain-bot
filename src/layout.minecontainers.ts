@@ -7,8 +7,6 @@
  * mod.thing == 'a thing'; // true
  */
 
-const Debugger = require("utils.debug");
-const debug = new Debugger("build.minecontainers");
 
 module.exports = function(opts){
     

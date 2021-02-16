@@ -7,22 +7,24 @@
  * mod.thing == 'a thing'; // true
  */
 
-const Debugger = require("utils.debug");
-const debug = new Debugger("build.bootupworker");
+import CreepFactory from "./creep.factory";
 
-const CreepBuilder = require("creep.factory");
+class BO_BootupWorker implements BuildCommand {
 
-module.exports = function(opts){
-    let creepbuilder = new CreepBuilder();
-    let room = opts.room;
-    let role = "worker";
+    cmd : string;
+    role : string;
+    room : Room;
 
-    this.cmd = opts.cmd;
+    constructor(room : Room, cmd : string) {
+        this.role = "worker";
+        this.cmd = cmd;
+        this.room = room;
+    }
 
-    this.satisfied = function() {
+    satisfied() : boolean {
         // Returns true if there's at least one general-purpose worker creep, false otherwise
         let curRoleCreeps = _.filter(Game.creeps, function(c) {
-            if (c.memory.home_room != room.name) {
+            if (c.memory.home_room != this.room.name) {
                 return false;
             } else {
                 let work = false;
@@ -46,28 +48,27 @@ module.exports = function(opts){
                 return work && move && carry;
             }
         });
-        debug.log(curRoleCreeps);
         return curRoleCreeps.length > 0;
     }
 
-    this.prereq = function() {
-        return  room.energyAvailable >= 300;
+    prereq() : boolean {
+        return  this.room.energyAvailable >= 300;
     }
 
-    this.run = function() {
-        let retval = creepbuilder.build_creep({
-            room: room,
-            role: role,
-            energy: room.energyAvailable,
-            memory: {
-                get_target: null,
-                put_target: null,
-                task: null,
-                idle: true
-            }
-        })
-        debug.log(retval, "run");
-
+    run() {
+        let memory = {
+            get_target: null,
+            put_target: null,
+            task: null,
+            idle: true
+        }
+        CreepFactory.build_creep(
+            this.room,
+            this.role,
+            this.room.energyAvailable,
+            memory
+        );
     }
-    return this;
 }
+
+export {BO_BootupWorker};

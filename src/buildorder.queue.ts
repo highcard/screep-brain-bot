@@ -1,63 +1,27 @@
-/*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports.thing = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('buildorder.queue');
- * mod.thing == 'a thing'; // true
- */
-const Debugger = require("utils.debug");
-const debug = new Debugger("buildorder.queue");
+import {taskfactory} from "./buildorder.taskfactory";
 
-const BuildFactory = require("buildorder.taskfactory");
+export default class BuildQueue {
 
-module.exports = function(room) {
-    var queue = [];
-    this.room = room;
-    
-    function validateArgs(opts) {
-        let name = opts.name;
-        if (name == undefined) {
-            debug.logError("cmd has no name");
-        }
-        let required = ["satisfied", "prereq", "run", "cmd"];
-        let valid = true;
-        for (let prop in required) {
-            let cur_prop = required[prop];
-            try { 
-                if (opts[cur_prop] == undefined) {
-                    throw "prereq undefined";
-                }
-            }
-            catch (err) {
-                debug.logError(`${name} missing property ${cur_prop}`)
-                valid = false;            
-            }
-        }
-        return valid;
+    queue: Array<BuildCommand>; 
+
+    constructor() {
+        this.queue = [];
     }
 
-    this.addCmd = function(opts) {
-        let cmd = new BuildFactory(opts);
-        if(validateArgs(cmd)) {
-            queue.push(cmd);
-        } else {
-            debug.logError("did not push cmd");
-        }
+    addCmd(room : Room, cmd : string) {
+        let build_command = taskfactory(room, cmd);
+        this.queue.push(build_command);
     }
 
-    this.run = function() {
-        while (queue.length > 0) {
-            let cmd = queue.shift();
+    run() {
+        while (this.queue.length > 0) {
+            let cmd = this.queue.shift();
             if (cmd.satisfied()) {
-                debug.logInfo(`satisfied`, `[${room.name}][${cmd.name}]`)
                 continue;
             }
             if (cmd.prereq()) {
-                debug.logInfo(`executing`, `[${room.name}][${cmd.name}]`)
                 cmd.run();
             } else {
-                debug.logInfo(`failed_prereqs`, `[${room.name}][${cmd.name}]`);
                 break;
             }
         }

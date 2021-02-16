@@ -1,32 +1,15 @@
-/*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports.thing = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('build.factory');
- * mod.thing == 'a thing'; // true
- */
+import {BO_BootupWorker} from "./build.bootupworker";
 
-const Debugger = require("utils.debug");
-const debug = new Debugger("buildorder.taskfactory");
-
-const BO_BootupWorker = require("build.bootupworker");
-
-module.exports = function(opts) {
-    let cmd = null;
-    if (!opts.name) {
-        debug.logError(`[build.factory] warning: ${opts.cmd} command has no name`);
-    }
-    switch(opts.cmd) {
+const taskfactory = function(room : Room, cmd : string) {
+    let build_command;
+    switch(cmd) {
         case "bootupworker":
-            cmd = new BO_BootupWorker({room: opts.room, cmd: opts.cmd});
+            build_command = new BO_BootupWorker(room, cmd);
             break;
         default:
-            debug.logError(`${[opts.cmd]} not recognized`);
-            cmd = null;
+            build_command = null;
         }
-    if (cmd != null && cmd.name == undefined) {
-        cmd.name = opts.name;
-    }
-    return cmd;
+    return build_command;
 };
+
+export {taskfactory};
