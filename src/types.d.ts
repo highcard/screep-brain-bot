@@ -117,6 +117,12 @@ interface MinerMemory extends WorkerMemory {
     }
 }
 
+interface CreepBehavior {
+    get_target : (creep : Creep) => RoomObject;
+    get_memory : (creep : Creep) => WorkerMemory;
+    run : (creep : Creep) => boolean;
+}
+
 interface BuildCommand {
     cmd: string;
     satisfied: () => boolean;

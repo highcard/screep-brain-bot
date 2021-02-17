@@ -1,12 +1,3 @@
-/*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports.thing = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('build.first_bootup');
- * mod.thing == 'a thing'; // true
- */
-
 import CreepFactory from "./creep.factory";
 import * as _W from "./constants.worktarget";
 

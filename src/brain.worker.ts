@@ -1,14 +1,13 @@
-import {CreepBehavior} from "./abstract.behavior";
 import * as _W from "./constants.worktarget";
 
-import {BehaviorWithdraw} from "./behavior.withdraw";
-import {BehaviorUpgrade} from "./behavior.upgrade";
-import {BehaviorFill} from "./behavior.fill";
-import {BehaviorBuild} from "./behavior.build";
-import {BehaviorHaul} from "./behavior.haul";
-import {BehaviorMine} from "./behavior.mine";
-import {BehaviorRepair} from "./behavior.repair";
-import {BehaviorWallrepair} from "./behavior.wallrepair";
+import * as BehaviorWithdraw from "./behavior.withdraw";
+import * as BehaviorUpgrade from "./behavior.upgrade";
+import * as BehaviorFill from "./behavior.fill";
+import * as BehaviorBuild from "./behavior.build";
+import * as BehaviorHaul from "./behavior.haul";
+import * as BehaviorMine from "./behavior.mine";
+import * as BehaviorRepair from "./behavior.repair";
+import * as BehaviorWallrepair from "./behavior.wallrepair";
 
 class BrainWorker {
 
@@ -102,8 +101,7 @@ class BrainWorker {
             default:
                 saymoji += "❓";
                 break;
-        
-        this.creep.say(saymoji);        
+        this.creep.say(saymoji);
         }
     }
 
@@ -115,40 +113,17 @@ class BrainWorker {
         this.set_working();
         let memory = this.get_memory();
         if (memory.working) {
-            let behavior : CreepBehavior;
-            switch(memory.task.type) {
-                case _W.PUTTARGET_BUILD:
-                    behavior = new BehaviorBuild(this.creep);
-                    break;
-                case _W.PUTTARGET_UPGRADE:
-                    behavior = new BehaviorUpgrade(this.creep);
-                    break;
-                case _W.PUTTARGET_FILL:
-                    behavior = new BehaviorFill(this.creep);
-                    break;
-                case _W.PUTTARGET_REPAIR:
-                    behavior = new BehaviorRepair(this.creep);
-                    break;
-                case _W.PUTTARGET_WALLREPAIR:
-                    behavior = new BehaviorWallrepair(this.creep);
-                    break;
-                case _W.PUTTARGET_CONTAINER:
-                    behavior = new BehaviorHaul(this.creep);
-                    break;
-                default:
-                    break;
-            }
-            if (behavior) {
-                behavior.run();
-            }
+            BehaviorUpgrade.run(this.creep) ||
+            BehaviorFill.run(this.creep) ||
+            BehaviorBuild.run(this.creep) ||
+            BehaviorHaul.run(this.creep) ||
+            BehaviorRepair.run(this.creep) ||
+            BehaviorWallrepair.run(this.creep);
         } else {
-            let can_wthdraw = new BehaviorWithdraw(this.creep).run();
-            if (!can_wthdraw) {
-                new BehaviorMine(this.creep).run();
-            }
+            BehaviorWithdraw.run(this.creep) || BehaviorMine.run(this.creep);
         }
         this.display_icons();
-    }    
+    }
 }
 
 export {BrainWorker}

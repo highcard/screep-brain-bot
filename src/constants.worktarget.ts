@@ -30,3 +30,20 @@ export const default_workermemory = {
         haul: null,
     }
 }
+
+export const default_minermemory = {
+    role: null,
+    home_room: null,
+    working: false,
+    idle: true,
+    task: {
+        type: null,
+        id: null,
+    },
+    target: {
+        mine: null,
+        build: null,
+        repair: null,
+        haul: null,
+    }
+}

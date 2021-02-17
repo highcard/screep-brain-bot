@@ -14,11 +14,12 @@ const PARTS = {
 const BODIES = {
     worker: [
         [WORK, CARRY, CARRY, MOVE, MOVE], // RCL 1 300 energy
-        [MOVE,MOVE,MOVE,WORK,WORK,CARRY,CARRY,CARRY,CARRY] // RCL 2        
+        [MOVE,MOVE,MOVE,WORK,WORK,CARRY,CARRY,CARRY,CARRY] // RCL 2
     ],
     miner: [
-        [CARRY, WORK, WORK, WORK, WORK, MOVE, MOVE], // RCL 2
-        [CARRY, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE] // RCL 3    
+        [MOVE,WORK,WORK,CARRY], // RCL 1: 300 enegy
+        [MOVE,MOVE,MOVE,WORK,WORK,WORK,CARRY], // RCL 2: 500 energy
+        [MOVE,MOVE,MOVE,MOVE,MOVE,WORK,WORK,WORK,WORK,WORK,CARRY] // RCL 3: 800 energy
     ],
     hauler: [
         [MOVE,MOVE,MOVE,CARRY,CARRY,CARRY], //rcl 1: 300

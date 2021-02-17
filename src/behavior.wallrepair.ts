@@ -1,42 +1,31 @@
-import {CreepBehavior} from "./abstract.behavior";
-
-class BehaviorWallrepair extends CreepBehavior {
-    
-    creep : Creep;
-
-    constructor(creep: Creep) {
-        super(creep);
-    }
-
-    get_memory() : WallRepairMemory {
-        return this.creep.memory as WallRepairMemory;
-    }
-
-    get_target() : WallRepairTarget {
-        let memory = this.get_memory();
-        let target = Game.getObjectById(memory.target.wallrepair);
-        if (!target) {
-            return null;
-        }
-        return target;
-    }
-
-    run() : boolean {
-        let target = this.get_target();
-        if (!target) {
-            return false;
-        }
-        switch(this.creep.repair(target)) {
-            case OK:
-                break;
-            case ERR_NOT_IN_RANGE:
-                this.creep.moveTo(target);
-                break;
-            default:
-                break;
-        }
-        return true; 
-    }    
-
+const get_memory = function(creep : Creep) : WallRepairMemory {
+    return creep.memory as WallRepairMemory;
 }
-export {BehaviorWallrepair};
+
+const get_target = function(creep : Creep) : WallRepairTarget {
+    let memory = get_memory(creep);
+    let target = Game.getObjectById(memory.target.wallrepair);
+    if (!target) {
+        return null;
+    }
+    return target;
+}
+
+const run = function(creep : Creep) : boolean {
+    let target = get_target(creep);
+    if (!target) {
+        return false;
+    }
+    switch(creep.repair(target)) {
+        case OK:
+            break;
+        case ERR_NOT_IN_RANGE:
+            creep.moveTo(target);
+            break;
+        default:
+            break;
+    }
+    return true; 
+}    
+
+export {run};

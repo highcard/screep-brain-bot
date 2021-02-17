@@ -1,8 +1,7 @@
-import {BehaviorMine} from "./behavior.mine";
-import {BehaviorHaul} from "./behavior.haul";
-import {BehaviorRepair} from "./behavior.repair";
-import {BehaviorBuild} from "./behavior.build";
-
+import * as BehaviorMine from "./behavior.mine";
+import * as BehaviorHaul from "./behavior.haul";
+import * as BehaviorRepair from "./behavior.repair";
+import * as BehaviorBuild from "./behavior.build";
 
 class BrainMiner {
 
@@ -16,15 +15,18 @@ class BrainMiner {
         return this.creep.memory as MinerMemory;
     }
 
+    // All Workers
     set_working() {
-        let memory = this.get_memory();
-        if (memory.working == undefined) {
-            memory.working = false;
+        if (this.creep.memory.working == undefined) {
+            this.creep.memory.working = true;
         }
-        if (!memory.working) {
-            let target = Game.getObjectById(memory.target.haul);
-            if (this.creep.pos.isEqualTo(target)){
-                memory.working = true;
+        if (this.creep.memory.working) {
+            if (this.creep.carry[RESOURCE_ENERGY] == 0) {
+                this.creep.memory.working = false;
+            }
+        } else {
+            if (this.creep.carry[RESOURCE_ENERGY] == this.creep.carryCapacity) {
+                this.creep.memory.working = true;
             }
         }
     }
@@ -34,12 +36,9 @@ class BrainMiner {
         this.set_working();
         let memory = this.get_memory();
         if (this.creep.memory.working) {
-            let mining = new BehaviorMine(this.creep);
-            mining.run();
-            let hauling = new BehaviorHaul(this.creep);
-            hauling.run();
+            BehaviorBuild.run(this.creep) || BehaviorRepair.run(this.creep) || BehaviorHaul.run(this.creep);
         } else {
-            this.creep.moveTo(Game.getObjectById(memory.target.haul));
+            BehaviorMine.run(this.creep);
         }
         this.creep.say("⛏");
     }

@@ -37,6 +37,19 @@ class BO_Miner implements BuildCommand {
         );
     }
 
+    private set_targets() {
+        let target = {};
+    }
+
+    private set_initial_memory() {
+        let memory = _W.default_minermemory;
+        memory.role = "miner";
+        memory.home_room = this.room.name;
+        memory.task.id = this.cmd;
+        memory.target.mine = this.room.memory.sources[0]; // considering optimizing
+        return memory;
+    }
+
 };
 
 export {BO_Miner};
