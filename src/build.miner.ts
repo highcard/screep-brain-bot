@@ -1,4 +1,6 @@
 import CreepFactory from "./creep.factory";
+import * as _W from "./constants.worktarget";
+
 
 class BO_Miner implements BuildCommand {
 
@@ -27,17 +29,11 @@ class BO_Miner implements BuildCommand {
     }
     
     run() {
-        let memory = {
-                get_target: null, 
-                put_target: null,
-                task: null,
-                idle: true
-        }
         CreepFactory.build_creep(
             this.room,
             this.role,
             this.room.energyAvailable,
-            memory
+            _W.default_workermemory
         );
     }
 

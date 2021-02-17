@@ -20,22 +20,16 @@ class BrainWorker {
     }
 
     mem_init() {
+        console.log("brainw.worker mem_init() start");
         let mem = this.creep.memory;
-        mem.role = mem.role != undefined ? mem.role : "worker";
+        let default_mem = _W.default_workermemory;
+        for (let properity in Object.entries(default_mem)) {
+            console.log(`property: ${properity}`);
+            mem[properity] = mem[properity] != undefined ? mem[properity] : default_mem[properity];
+        }
         mem.home_room = mem.home_room != undefined ? mem.home_room : this.creep.room.name;
-        mem.working = mem.working != undefined ? mem.working : false;
-        mem.idle = mem.idle != undefined ? mem.idle : true;
-        mem.task = mem.task != undefined ? mem.task : {type: null, id: null};
-        mem.target = mem.target != undefined ? mem.target : {
-            mine: null,
-            build: null,
-            upgrade: null,
-            fill: null,
-            repair: null,
-            wallrepair: null,
-            withdraw: null,
-            haul: null
-        };
+        mem.role = mem.role != undefined ? mem.role : "worker";
+        console.log("brainw.worker mem_init() end");
     }
 
     get_memory() : WorkerMemory {

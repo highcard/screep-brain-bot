@@ -15,7 +15,7 @@ export default class CreepControl {
     run() {
         console.log("begin creepcontrol.run()");
         // Run creep behaviors for all creeps controlled by room Scheduler
-        let creeps = _.filter(Game.creeps, (c) => !c.spawning && c.memory.home_room == this.room.name);
+        let creeps = _.filter(Game.creeps, (c) => c.memory.home_room == this.room.name);
         for (let c in creeps) {
             // Get current Creep 
             let creep = creeps[c];

@@ -1,3 +1,5 @@
+import * as _W from "./constants.worktarget";
+
 const PARTS = {
     [MOVE] : 50,
     [WORK] : 100,

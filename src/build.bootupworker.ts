@@ -8,6 +8,7 @@
  */
 
 import CreepFactory from "./creep.factory";
+import * as _W from "./constants.worktarget";
 
 class BO_BootupWorker implements BuildCommand {
 
@@ -60,12 +61,8 @@ class BO_BootupWorker implements BuildCommand {
     }
 
     run() {
-        let memory = {
-            get_target: null,
-            put_target: null,
-            task: null,
-            idle: true
-        }
+        let memory = _W.default_workermemory;
+        memory.task.id = this.cmd;
         CreepFactory.build_creep(
             this.room,
             this.role,
@@ -73,6 +70,17 @@ class BO_BootupWorker implements BuildCommand {
             memory
         );
     }
+
+    private set_initial_memory() {
+        let memory = _W.default_workermemory;
+        memory.task.id = this.cmd;
+        memory.task.type = _W.PUTTARGET_FILL;
+        memory.target.mine = this.room.memory.sources[0]; // considering optimizing
+        memory.target.fill = this.room.find(FIND_MY_SPAWNS)[0] // figure out how to get specific spawn id
+
+        return memory;
+    }
+
 }
 
 export {BO_BootupWorker};
