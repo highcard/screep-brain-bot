@@ -13,7 +13,7 @@ function scan_visible_rooms() {
     //     scan_room(roomkey);
     // }
     if (Game.rooms["sim"] != undefined) {
-        scan_room("sim");
+        scan_room("sim", true);
     }
 }
 

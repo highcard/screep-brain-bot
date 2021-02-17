@@ -23,9 +23,11 @@ class BrainWorker {
         console.log("brainw.worker mem_init() start");
         let mem = this.creep.memory;
         let default_mem = _W.default_workermemory;
-        for (let properity in Object.entries(default_mem)) {
-            console.log(`property: ${properity}`);
-            mem[properity] = mem[properity] != undefined ? mem[properity] : default_mem[properity];
+        let entries = Object.entries(default_mem);
+        for (let property in entries) {
+            let key = entries[property][0];
+            let value = entries[property][1]
+            mem[key] = mem[key] != undefined ? mem[key] : value;
         }
         mem.home_room = mem.home_room != undefined ? mem.home_room : this.creep.room.name;
         mem.role = mem.role != undefined ? mem.role : "worker";

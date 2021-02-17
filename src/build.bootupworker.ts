@@ -25,7 +25,6 @@ class BO_BootupWorker implements BuildCommand {
     satisfied() : boolean {
         // Returns true if there's at least one general-purpose worker creep, false otherwise
         console.log("build.bootupworker begin satisfied()");
-        console.log(this.room);
         let room = this.room;
         let curRoleCreeps = _.filter(Game.creeps, function(c) {
             if (c.memory.home_room != room.name) {
@@ -76,9 +75,8 @@ class BO_BootupWorker implements BuildCommand {
         memory.home_room = this.room.name;
         memory.task.id = this.cmd;
         memory.task.type = _W.PUTTARGET_FILL;
-        memory.target.mine = this.room.memory.sources[0]; // considering optimizing
+        memory.target.mine = this.room.memory.sources[0], // considering optimizing
         memory.target.fill = this.room.find(FIND_MY_SPAWNS)[0].id // figure out how to get specific spawn id
-        console.log(memory);
         return memory;
     }
 
