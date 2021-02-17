@@ -2,7 +2,7 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "ES6",
-        "outDir": "./build",
+        "outDir": "C:\\Users\\tobym\\AppData\\Local\\Screeps\\scripts\\screeps.com\\beBadassTS",
         "rootDir": "./src"
     }
 }

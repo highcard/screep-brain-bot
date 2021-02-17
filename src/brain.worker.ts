@@ -1,4 +1,5 @@
 import {CreepBehavior} from "./abstract.behavior";
+import * as _W from "./constants.worktarget";
 
 import {BehaviorWithdraw} from "./behavior.withdraw";
 import {BehaviorUpgrade} from "./behavior.upgrade";
@@ -15,6 +16,26 @@ class BrainWorker {
 
     constructor(creep : Creep) {
         this.creep = creep;
+        this.mem_init();
+    }
+
+    mem_init() {
+        let mem = this.creep.memory;
+        mem.role = mem.role != undefined ? mem.role : "worker";
+        mem.home_room = mem.home_room != undefined ? mem.home_room : this.creep.room.name;
+        mem.working = mem.working != undefined ? mem.working : false;
+        mem.idle = mem.idle != undefined ? mem.idle : true;
+        mem.task = mem.task != undefined ? mem.task : {type: null, id: null};
+        mem.target = mem.target != undefined ? mem.target : {
+            mine: null,
+            build: null,
+            upgrade: null,
+            fill: null,
+            repair: null,
+            wallrepair: null,
+            withdraw: null,
+            haul: null
+        };
     }
 
     get_memory() : WorkerMemory {
@@ -61,20 +82,23 @@ class BrainWorker {
                 saymoji += "🗑";
         }
         switch(memory.task.type) {
-            case TASK_BUILDER:
+            case _W.PUTTARGET_BUILD:
                 saymoji += "🔨";
                 break;
-            case TASK_CONTROLLER:
+            case _W.PUTTARGET_UPGRADE:
                 saymoji += "🎮";
                 break;
-            case TASK_SPAWNER:
+            case _W.PUTTARGET_FILL:
                 saymoji += "🌱";
                 break;
-            case TASK_REPAIR:
+            case _W.PUTTARGET_REPAIR:
                 saymoji += "🔧";
                 break;
-            case TASK_WALLREPAIR:
+            case _W.PUTTARGET_WALLREPAIR:
                 saymoji += "🧱";
+                break;
+            case _W.PUTTARGET_CONTAINER:
+                saymoji += "🚚";
                 break;
             case undefined:
                 saymoji += "❗";
@@ -97,20 +121,23 @@ class BrainWorker {
         if (memory.working) {
             let behavior : CreepBehavior;
             switch(memory.task.type) {
-                case TASK_BUILDER:
+                case _W.PUTTARGET_BUILD:
                     behavior = new BehaviorBuild(this.creep);
                     break;
-                case TASK_CONTROLLER:
+                case _W.PUTTARGET_UPGRADE:
                     behavior = new BehaviorUpgrade(this.creep);
                     break;
-                case TASK_SPAWNER:
+                case _W.PUTTARGET_FILL:
                     behavior = new BehaviorFill(this.creep);
                     break;
-                case TASK_WALLREPAIR:
+                case _W.PUTTARGET_REPAIR:
                     behavior = new BehaviorRepair(this.creep);
                     break;
-                case TASK_WALLREPAIR:
+                case _W.PUTTARGET_WALLREPAIR:
                     behavior = new BehaviorWallrepair(this.creep);
+                    break;
+                case _W.PUTTARGET_CONTAINER:
+                    behavior = new BehaviorHaul(this.creep);
                     break;
                 default:
                     break;

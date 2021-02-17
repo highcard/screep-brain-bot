@@ -61,11 +61,11 @@ function scan_room(room_name : string, reset=false) {
 
 function evaluate_all() {
     for (let room in Memory.rooms) {
-        this.evaluate_room(room, true);
+        evaluate_room(room);
     }
 }
 
-function evaluate_room(room : string) {
+function evaluate_room(room) {
     let directive;
     if (!Memory.rooms[room].directing) {
         Memory.rooms[room].directing = Memory.rooms[room].my;
@@ -83,10 +83,13 @@ function evaluate_room(room : string) {
 
 
 function run_rooms() {
+    console.log("begin run_rooms");
     for (let room in Memory.rooms) {
+        console.log(room);
         if (Memory.rooms[room].directing) {
             let creepcontrol;
             let director;
+            console.log("before switch");
             switch (Memory.rooms[room].directive) {
                 case DIR_NONE:
                     // do nothing
@@ -101,10 +104,13 @@ function run_rooms() {
                 case DIR_COLONIZE:
                     break;
             }
+            console.log("before director.run()");
             if (director) director.run();
+            console.log("before creepcontrol.run()");
             if (creepcontrol) creepcontrol.run();
         }
     }
+    console.log("end of run_rooms()");    
 }
 
 export {

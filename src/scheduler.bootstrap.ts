@@ -9,7 +9,7 @@ export default class BootStrapDirector {
     }
 
     run() {
-
+        console.log("scheduler.bootstrap beginning of run()");
         // This should be moved out of run()
         let rcl_1 = [
             "bootupworker",
@@ -21,6 +21,7 @@ export default class BootStrapDirector {
             queue.addCmd(this.room, rcl_1[cmd]);
         }
         queue.run();
+        console.log("scheduler.bootstarap after queue.run()");
     }
 
 }

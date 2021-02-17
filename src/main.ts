@@ -2,8 +2,8 @@
 
 import * as Debugger from "./utils.debug";
 
-import * as WorldMapControl from "./map.evaluate";
-import * as RoomDirector from "./memory.scanroom";
+import * as WorldMapControl from "./director.worldmap";
+import * as RoomDirector from "./director.room";
 import {cleanup_creeps} from "./memory.creeps";
 
 
@@ -16,8 +16,11 @@ module.exports.loop = function () {
 
     cleanup_creeps();
 
+    console.log("hit_before_scan_visible_rooms");
     RoomDirector.scan_visible_rooms();
+    console.log("hit_before_evaluate_all");
     RoomDirector.evaluate_all();
+    console.log("hit_before_run_rooms");
     RoomDirector.run_rooms();
-
+    console.log(`>>>> END OF MAIN: ${Game.time}`);
 };

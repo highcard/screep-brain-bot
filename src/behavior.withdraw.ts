@@ -29,6 +29,8 @@ class BehaviorWithdraw extends CreepBehavior {
         }
         let ground_energy = target.pos.lookFor(LOOK_ENERGY).sort((a,b)=> b.amount - a.amount);
         let retval;
+        console.log("hit behaviorwithdraw");
+        console.log(this.creep);
         if (ground_energy.length > 0 && ground_energy[0].amount > 0) {
             retval = this.creep.pickup(ground_energy[0]);
         } else {

@@ -23,8 +23,11 @@ class BO_BootupWorker implements BuildCommand {
 
     satisfied() : boolean {
         // Returns true if there's at least one general-purpose worker creep, false otherwise
+        console.log("build.bootupworker begin satisfied()");
+        console.log(this.room);
+        let room = this.room;
         let curRoleCreeps = _.filter(Game.creeps, function(c) {
-            if (c.memory.home_room != this.room.name) {
+            if (c.memory.home_room != room.name) {
                 return false;
             } else {
                 let work = false;
@@ -49,6 +52,7 @@ class BO_BootupWorker implements BuildCommand {
             }
         });
         return curRoleCreeps.length > 0;
+        console.log("build.bootupworker end satisfied()");
     }
 
     prereq() : boolean {
