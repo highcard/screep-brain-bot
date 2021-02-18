@@ -1,8 +1,7 @@
 import CreepFactory from "./creep.factory";
 import * as _W from "./constants.worktarget";
 
-
-class BO_Miner implements BuildCommand {
+class ObjectiveMining implements BuildCommand {
 
     cmd : string;
     role : string;
@@ -52,4 +51,4 @@ class BO_Miner implements BuildCommand {
 
 };
 
-export {BO_Miner};
+export {ObjectiveMining};

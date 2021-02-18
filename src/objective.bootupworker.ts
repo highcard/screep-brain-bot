@@ -1,7 +1,7 @@
 import CreepFactory from "./creep.factory";
 import * as _W from "./constants.worktarget";
 
-class BO_BootupWorker implements BuildCommand {
+class ObjectiveBootup implements BuildCommand {
 
     cmd : string;
     role : string;
@@ -15,7 +15,6 @@ class BO_BootupWorker implements BuildCommand {
 
     satisfied() : boolean {
         // Returns true if there's at least one general-purpose worker creep, false otherwise
-        console.log("build.bootupworker begin satisfied()");
         let room = this.room;
         let curRoleCreeps = _.filter(Game.creeps, function(c) {
             if (c.memory.home_room != room.name) {
@@ -43,7 +42,6 @@ class BO_BootupWorker implements BuildCommand {
             }
         });
         return curRoleCreeps.length > 0;
-        console.log("build.bootupworker end satisfied()");
     }
 
     prereq() : boolean {
@@ -73,4 +71,4 @@ class BO_BootupWorker implements BuildCommand {
 
 }
 
-export {BO_BootupWorker};
+export {ObjectiveBootup};
