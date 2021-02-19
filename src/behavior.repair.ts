@@ -1,3 +1,11 @@
+/// <reference path="./creepmemory.worker.ts" />
+
+interface RepairMemory extends WorkerMemory {
+    target: {
+        repair: Id<RepairTarget>;
+    };
+}
+
 const get_memory = function(creep : Creep) : RepairMemory {
     return creep.memory as RepairMemory;
 }

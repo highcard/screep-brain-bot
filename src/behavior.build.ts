@@ -1,3 +1,17 @@
+/// <reference path="./creepmemory.worker.ts" />
+
+interface BuildMemory extends WorkerMemory {
+    target: {
+        build: Id<ConstructionSite>;
+    };
+}
+
+const isBuildMemory = function(x : CreepMemory): x is BuildMemory {
+    if (isWorkerMemory(x)) {
+        return (x as WorkerMemory).target.build !== undefined;        
+    }
+}
+
 const get_memory = function(creep : Creep) : BuildMemory {
     return creep.memory as BuildMemory;
 }
@@ -28,4 +42,4 @@ const run = function(creep : Creep) : boolean {
     return true;
 }    
 
-export {run};
+export {run, isBuildMemory};

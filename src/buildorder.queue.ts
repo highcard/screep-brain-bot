@@ -1,6 +1,8 @@
 import {ObjectiveBootup} from "./objective.bootupworker";
 import {ObjectiveMining} from "./objective.mining";
 
+/// <reference path="./builorder.command" />
+
 export default class BuildQueue {
 
     queue: Array<BuildCommand>; 

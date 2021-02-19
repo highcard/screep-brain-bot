@@ -1,3 +1,11 @@
+/// <reference path="./creepmemory.worker.ts" />
+
+interface FillMemory extends WorkerMemory {
+    target: {
+        fill: Id<FillTarget>;
+    }
+}
+
 const get_memory = function(creep : Creep) : FillMemory {
     return creep.memory as FillMemory;
 }

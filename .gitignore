@@ -2,3 +2,4 @@ proj.*
 *.old
 node_modules/
 build/
+tsconfig.json

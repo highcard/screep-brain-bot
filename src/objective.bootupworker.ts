@@ -1,6 +1,8 @@
 import CreepFactory from "./creep.factory";
 import * as _W from "./constants.worktarget";
 
+/// <reference path="./builorder.command" />
+
 class ObjectiveBootup implements BuildCommand {
 
     cmd : string;

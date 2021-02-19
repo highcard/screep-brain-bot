@@ -1,3 +1,11 @@
+/// <reference path="./creepmemory.worker.ts" />
+
+interface HaulMemory extends WorkerMemory {
+    target: {
+        haul: Id<ContainerTarget>;
+    };
+}
+
 const get_memory = function(creep : Creep) : HaulMemory {
     return creep.memory as HaulMemory;
 }

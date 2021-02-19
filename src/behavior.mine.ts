@@ -1,5 +1,13 @@
-const get_memory = function(creep : Creep) : MinerMemory {
-    return creep.memory as MinerMemory;
+/// <reference path="./creepmemory.worker.ts" />
+
+interface HarvestMemory extends WorkerMemory {
+    target: {
+        mine: Id<Source>;
+    }
+}
+
+const get_memory = function(creep : Creep) : HarvestMemory {
+    return creep.memory as HarvestMemory;
 }
 
 const get_target = function(creep : Creep) : Source {

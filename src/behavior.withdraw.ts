@@ -1,3 +1,11 @@
+/// <reference path="./creepmemory.worker.ts" />
+
+interface WithdrawMemory extends WorkerMemory {
+    target: {
+        withdraw: Id<ContainerTarget>;
+    }
+}
+
 const get_memory = function(creep : Creep) : WithdrawMemory {
     return creep.memory as WithdrawMemory;
 }

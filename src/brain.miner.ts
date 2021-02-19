@@ -3,6 +3,15 @@ import * as BehaviorHaul from "./behavior.haul";
 import * as BehaviorRepair from "./behavior.repair";
 import * as BehaviorBuild from "./behavior.build";
 
+declare interface MinerMemory extends WorkerMemory {
+    target: {
+        mine: Id<Source>;
+        build: Id<ConstructionSite>;
+        repair: Id<RepairTarget>;
+        haul: Id<ContainerTarget>;
+    }
+}
+
 class BrainMiner {
 
     creep : Creep;

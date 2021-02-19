@@ -66,6 +66,12 @@ interface WorkerMemory extends CreepMemory {
     }
 }
 
+interface HarvestMemory extends WorkerMemory {
+    target: {
+        mine: Id<Source>;
+    }
+}
+
 interface FillMemory extends WorkerMemory {
     target: {
         fill: Id<FillTarget>;
@@ -108,27 +114,8 @@ interface WallRepairMemory extends WorkerMemory {
     }
 }
 
-interface MinerMemory extends WorkerMemory {
-    target: {
-        mine: Id<Source>;
-        build: Id<ConstructionSite>;
-        repair: Id<RepairTarget>;
-        haul: Id<ContainerTarget>;
-    }
-}
 
-interface CreepBehavior {
-    get_target : (creep : Creep) => RoomObject;
-    get_memory : (creep : Creep) => WorkerMemory;
-    run : (creep : Creep) => boolean;
-}
 
-interface BuildCommand {
-    cmd: string;
-    satisfied: () => boolean;
-    prereq: () => boolean;
-    run: () => void;
-}
 
 interface MineralRecord {
     id: Id<Mineral>;

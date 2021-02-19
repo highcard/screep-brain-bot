@@ -1,3 +1,12 @@
+/// <reference path="./creepmemory.worker.ts" />
+
+interface UpgradeMemory extends WorkerMemory {
+    target: {
+        upgrade: Id<StructureController>;
+    };
+}
+
+
 const get_memory = function(creep : Creep) : UpgradeMemory {
     return creep.memory as UpgradeMemory;
 }
