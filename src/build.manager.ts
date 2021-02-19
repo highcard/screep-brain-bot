@@ -10,14 +10,15 @@ declare interface BuildTask {
     site: Id<ConstructionSite>;
     type: BuildableStructureConstant;
     assigned: Array<Id<Creep>>;
-    complete?: boolean;
 }
 
 class BuildManager {
 
-    running : Array<BuildTask>;
     wait_queue : Array<BuildTask>;
+    scheduled : Array<BuildTask>;
+    running : Array<BuildTask>;
     room : Room;
+    idle_creeps: Array<Creep>;
 
     // Constructor Creates Instance for each Room/RoomDirector
     constructor(room : Room) {
@@ -25,6 +26,7 @@ class BuildManager {
         this.mem_init();
         this.running = Memory.rooms[this.room.name][BUILD_MGR_MEMKEY][BUILD_RUNNING_MEMKEY];
         this.wait_queue = Memory.rooms[this.room.name][BUILD_MGR_MEMKEY][BUILD_WAIT_MEMKEY];
+        this.idle_creeps = _.filter(Game.creeps, (c) => c.memory.idle && c.memory.role == "worker");
     }
 
     // Initializes necessary Memory structure
@@ -103,54 +105,129 @@ class BuildManager {
             return null;
         }
         return found_queued_task[0];
-    }    
+    }
+
+    end_task(task: BuildTask) {
+        for (let c in task.assigned) {
+            // free up the creeps and declare them as idle
+            let creep_id = task.assigned[c];
+            let mem = Memory.creeps[creep_id]; // TYPEGUARD HERE
+            if (BehaviorBuild.isBuildMemory(mem)) {
+                mem.target.build = null;
+                mem.task = {
+                    type: null,
+                    id: null
+                };
+                mem.idle = true;                    
+            } else {
+                console.log(`build.manager run_task ${creep_id} not WorkerMemory`);
+            }
+        }
+    }
+
+    assign_to_creep(task : BuildTask, creep : Creep) {
+        let creep_mem = creep.memory;
+        if (BehaviorBuild.isBuildMemory(creep_mem)) {
+            // assign creep memory
+            creep_mem.target.build = task.site;
+            creep_mem.task.id = task.objective;
+            creep_mem.task.type = PUTTARGET_BUILD;
+            creep_mem.idle = false;
+            // assign task memory
+            if (!task.assigned.includes(creep.id)) {
+                task.assigned.push(creep.id);
+            }
+        }
+    }
+
+    release_creep(creep_id : Id<Creep>) {
+        let creep = Game.creeps[creep_id];
+        if (!creep) {
+            return;
+        }
+        let creep_mem = creep.memory;
+        if (BehaviorBuild.isBuildMemory(creep_mem)) {
+            creep_mem.target.build = null;
+            creep_mem.task.id = null;
+            creep_mem.task.type = null;
+            creep_mem.idle = true;
+        }
+    }
+
+    release_assigned_creeps(task: BuildTask) {
+        let creep_id : Id<Creep>;
+        while (task.assigned.length > 0) {
+            creep_id = task.assigned.pop();
+            this.release_creep(creep_id);
+        }
+    }
 
     // Executes the logic for running a task currently in the build_list;
     run_task(task : BuildTask) {
         // check to see if the task is complete, and free up any assigned creeps if applicable
-        if (this.has_structure(task.pos, task.type)) {
-            for (let c in task.assigned) {
-                // free up the creeps and declare them as idle
-                let creep_id = task.assigned[c];
-                let mem = Memory.creeps[creep_id]; // TYPEGUARD HERE
-                if (BehaviorBuild.isBuildMemory(mem)) {
-                    mem.target.build = null;
-                    mem.task = {
-                        type: null,
-                        id: null
-                    };
-                    mem.idle = true;                    
-                } else {
-                    console.log(`build.manager run_task ${creep_id} not WorkerMemory`);
-                }
-            }
-            task.complete = true;
-            return;
-        }
 
-        // check to see if there's a site set (TODO: Edgecase that site exists but is desyncd with stored value)
+
+        // check to see if a site exists, and assign its ID to assigned creeps
         if (!task.site) {
             let site = this.has_site(task.pos, task.type);
             if (!site) {
+                // if there's no site, it will be created this tick...
                 let pos = this.rehydrate_room_position(task.pos);
                 pos.createConstructionSite(task.type);
-            } else {
-                task.site = site.id;
-                for (let c in task.assigned) {
-                    let creep_id = task.assigned[c];
-                    let creep_mem = Memory.creeps[creep_id];
-                    if (BehaviorBuild.isBuildMemory(creep_mem)) {                    
-                        creep_mem.target.build = site.id;
-                    }
-                }
             }
         }
 
-        if (task.site) {
+        // this won't happen until the subsequent tick
+        // consider a "task pending" queue.
+    }
+
+    run_all() {
+        // check all running tasks to see if tasks are /co, and flag for termination
+        // if they're not complete but don't have site or creeps assigned, move to "scheduled"
+        let task : BuildTask;
+        while (this.running.length > 0) {
+            task = this.running.shift();
+            if (this.has_structure(task.pos, task.type)) {
+                this.end_task(task);
+                continue;
+            }
+            // verify that the site exists
             let site = Game.getObjectById(task.site);
             if (!site) {
-                task.site = null;
+                // release its creeps
+                this.wait_queue.unshift(task);
+                continue;
+            }
+
+            // verify that all assigned creeps exist and are assigned
+            let verified : Array<Id<Creep>> = [];
+            for (let c in task.assigned) {
+                let creep : Creep = Game.creeps[task.assigned[c]];
+                if (!creep || creep.memory.task.id != task.objective) {
+                    continue;
+                }
+                verified.push(task.assigned[c]);
+            }
+            task.assigned = verified;
+
+
+            // If the site doesn't exist or if there are no assigned creeps, move back to scheduled
+            if (!site || task.assigned.length == 0) {
+                this.scheduled.push(task);
             }
         }
+
+
+        // check all scheduled tasks. assign creeps or sites accordingly, and move to "running"
+        // if there isn't a valid worker creep, check to see if we can spawn one, and do so
+        // (TODO: think about spawn manager system);
+
+        // if "scheduled" is empty, shift/push the next task from `wait_queue`
+
+        while (this.scheduled.length > 0) {
+            
+        }
+
     }
+
 }
