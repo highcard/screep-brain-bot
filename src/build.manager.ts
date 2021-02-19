@@ -1,4 +1,7 @@
 import * as BehaviorBuild from "./behavior.build";
+import CreepFactory from "./creep.factory";
+import * as _W from "./constants.worktarget";
+
 
 const BUILD_MGR_MEMKEY = "build_manager";
 const BUILD_RUNNING_MEMKEY = "running";
@@ -14,19 +17,19 @@ declare interface BuildTask {
 
 class BuildManager {
 
-    wait_queue : Array<BuildTask>;
+    waitqueue : Array<BuildTask>;
     scheduled : Array<BuildTask>;
     running : Array<BuildTask>;
     room : Room;
     idle_creeps: Array<Creep>;
 
-    // Constructor Creates Instance for each Room/RoomDirector
+    // Constructor Creates Instance for each RoomkoomDirector
     constructor(room : Room) {
         this.room = room;
         this.mem_init();
         this.running = Memory.rooms[this.room.name][BUILD_MGR_MEMKEY][BUILD_RUNNING_MEMKEY];
-        this.wait_queue = Memory.rooms[this.room.name][BUILD_MGR_MEMKEY][BUILD_WAIT_MEMKEY];
-        this.idle_creeps = _.filter(Game.creeps, (c) => c.memory.idle && c.memory.role == "worker");
+        this.waitqueue = Memory.rooms[this.room.name][BUILD_MGR_MEMKEY][BUILD_WAIT_MEMKEY];
+        this.idle_creeps = _.filter(Game.creeps, (c) => c.memory.idle && c.memory.home_room == room.name && c.memory.role == "worker");
     }
 
     // Initializes necessary Memory structure
@@ -46,7 +49,8 @@ class BuildManager {
         return new RoomPosition(pos.x, pos.y, pos.roomName);
     }
 
-    // Adds a task to the wait_queue or running depending on whether creeps are assigned or not
+    // Adds a task to the waitqueue or running depending on whether creeps are assigned or not
+    // RECONSIDER THIS re: waitqueue, scheduled, running etc. 
     add_task(objective: string, location: RoomPosition, type: BuildableStructureConstant, assigned? : Array<Id<Creep>>) {
         let task = {
             objective: objective,
@@ -59,15 +63,23 @@ class BuildManager {
         if (task.assigned.length > 0) {
             this.running.push(task);
         } else {
-            this.wait_queue.push(task);
+            this.waitqueue.push(task);
         }
     }
+
+
+    /*
+    *
+    * Task/Structure Verification methods
+    *
+    */ 
 
     task_accounted_for(location : RoomPosition, type: BuildableStructureConstant) : boolean {
         let pos = this.rehydrate_room_position(location);
         return this.has_structure(pos, type) != null 
                 || this.has_site(pos, type) != null 
                 || this.has_running_task(pos, type) != null
+                || this.has_scheduled_task(pos, type) != null
                 || this.has_queued_task(pos, type) != null;
     }
 
@@ -89,7 +101,7 @@ class BuildManager {
         return found_site[0];
     }
 
-    has_running_task(location: RoomPosition, type: BuildableStructureConstant) : BuildTask {
+    has_task(location: RoomPosition, type: BuildableStructureConstant, queue: Array<BuildTask>) : BuildTask {
         let pos = this.rehydrate_room_position(location);
         let found_working_task = _.filter(this.running, t => t.pos.isEqualTo(pos) && t.type == type);
         if (!found_working_task) {
@@ -98,34 +110,27 @@ class BuildManager {
         return found_working_task[0];
     }
 
+    has_running_task(location: RoomPosition, type: BuildableStructureConstant) : BuildTask {
+        return this.has_task(location, type, this.running);
+    }
+
+    has_scheduled_task(location: RoomPosition, type: BuildableStructureConstant) : BuildTask {
+        return this.has_task(location, type, this.scheduled);
+    }   
+
     has_queued_task(location: RoomPosition, type: BuildableStructureConstant) : BuildTask {
-        let pos = this.rehydrate_room_position(location);
-        let found_queued_task = _.filter(this.wait_queue, t => t.pos.isEqualTo(pos) && t.type == type);
-        if (!found_queued_task) {
-            return null;
-        }
-        return found_queued_task[0];
+        return this.has_task(location, type, this.waitqueue)
     }
 
-    end_task(task: BuildTask) {
-        for (let c in task.assigned) {
-            // free up the creeps and declare them as idle
-            let creep_id = task.assigned[c];
-            let mem = Memory.creeps[creep_id]; // TYPEGUARD HERE
-            if (BehaviorBuild.isBuildMemory(mem)) {
-                mem.target.build = null;
-                mem.task = {
-                    type: null,
-                    id: null
-                };
-                mem.idle = true;                    
-            } else {
-                console.log(`build.manager run_task ${creep_id} not WorkerMemory`);
-            }
-        }
-    }
+    /* 
+    *
+    *
+    * Creep Memory Management Methods
+    *
+    * 
+    */
 
-    assign_to_creep(task : BuildTask, creep : Creep) {
+    assign_task_to_creep(task : BuildTask, creep : Creep) {
         let creep_mem = creep.memory;
         if (BehaviorBuild.isBuildMemory(creep_mem)) {
             // assign creep memory
@@ -162,40 +167,33 @@ class BuildManager {
         }
     }
 
-    // Executes the logic for running a task currently in the build_list;
-    run_task(task : BuildTask) {
-        // check to see if the task is complete, and free up any assigned creeps if applicable
+    /*
+    *
+    *
+    *  Queue Running Methods
+    *
+    *
+    */
 
 
-        // check to see if a site exists, and assign its ID to assigned creeps
-        if (!task.site) {
-            let site = this.has_site(task.pos, task.type);
-            if (!site) {
-                // if there's no site, it will be created this tick...
-                let pos = this.rehydrate_room_position(task.pos);
-                pos.createConstructionSite(task.type);
-            }
-        }
-
-        // this won't happen until the subsequent tick
-        // consider a "task pending" queue.
-    }
-
-    run_all() {
+    run_tasks() {
         // check all running tasks to see if tasks are /co, and flag for termination
         // if they're not complete but don't have site or creeps assigned, move to "scheduled"
         let task : BuildTask;
         while (this.running.length > 0) {
             task = this.running.shift();
+
+            // Check If Done
             if (this.has_structure(task.pos, task.type)) {
-                this.end_task(task);
+                this.release_assigned_creeps(task);
                 continue;
             }
-            // verify that the site exists
+
+            // Verify that Site Exists
             let site = Game.getObjectById(task.site);
             if (!site) {
-                // release its creeps
-                this.wait_queue.unshift(task);
+                this.release_assigned_creeps(task);
+                this.waitqueue.unshift(task);
                 continue;
             }
 
@@ -206,28 +204,57 @@ class BuildManager {
                 if (!creep || creep.memory.task.id != task.objective) {
                     continue;
                 }
-                verified.push(task.assigned[c]);
+                verified.unshift(task.assigned[c]);
+            }
+            if (verified.length == 0) {
+                this.scheduled.unshift()
+                continue;
             }
             task.assigned = verified;
-
-
             // If the site doesn't exist or if there are no assigned creeps, move back to scheduled
-            if (!site || task.assigned.length == 0) {
-                this.scheduled.push(task);
-            }
         }
+    }
 
-
+    run_scheduled() {
         // check all scheduled tasks. assign creeps or sites accordingly, and move to "running"
         // if there isn't a valid worker creep, check to see if we can spawn one, and do so
         // (TODO: think about spawn manager system);
 
-        // if "scheduled" is empty, shift/push the next task from `wait_queue`
-
-        while (this.scheduled.length > 0) {
-            
+        let unassigned : Array<BuildTask>;
+        let task : BuildTask;
+        while (this.scheduled.length > 0 && this.idle_creeps.length > 0) {
+            this.assign_task_to_creep(this.scheduled.pop(), this.idle_creeps.pop());
         }
+        while (this.scheduled.length > 0) {
+            // Check if we can queue up a spawn, and do so. Move this logic to a room SpawnManger
+            task = this.scheduled.pop();
+            let memory : WorkerMemory = _W.default_workermemory;
+            memory.role = "worker";
+            memory.home_room = this.room.name;
+            if (CreepFactory.build_creep(this.room, "worker", 300, memory) != OK) {
+                this.scheduled.push(task);
+                break;
+            }
+        }
+    }
 
+    run_waitqueue() {
+        // if "scheduled" is empty, shift/push the next task from `wait_queue`
+        if (this.scheduled.length > 0) {
+            return;
+        }
+        let task : BuildTask = this.waitqueue.pop();
+        if (!this.has_site(task.pos, task.type)) {
+            this.rehydrate_room_position(task.pos).createConstructionSite(task.type);
+        }        
+        this.scheduled.push(task);
+    }
+
+
+    run() {
+        this.run_tasks();
+        this.run_scheduled();
+        this.run_waitqueue();
     }
 
 }
