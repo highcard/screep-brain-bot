@@ -5,7 +5,7 @@ import * as BehaviorUpgrade from "./behavior.upgrade";
 import * as BehaviorFill from "./behavior.fill";
 import * as BehaviorBuild from "./behavior.build";
 import * as BehaviorHaul from "./behavior.haul";
-import * as BehaviorMine from "./behavior.mine";
+import * as BehaviorHarvest from "./behavior.harvest";
 import * as BehaviorRepair from "./behavior.repair";
 import * as BehaviorWallrepair from "./behavior.wallrepair";
 
@@ -120,7 +120,9 @@ class BrainWorker {
             BehaviorRepair.run(this.creep) ||
             BehaviorWallrepair.run(this.creep);
         } else {
-            BehaviorWithdraw.run(this.creep) || BehaviorMine.run(this.creep);
+            if (!(BehaviorWithdraw.run(this.creep) || BehaviorHarvest.run(this.creep))) {
+                console.log("creep starved");
+            }
         }
         this.display_icons();
     }

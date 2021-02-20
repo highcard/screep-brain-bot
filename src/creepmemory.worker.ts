@@ -22,7 +22,7 @@ declare interface WorkerMemory extends CreepMemory {
         id: string;
     };
     target: {
-        mine?: Id<Source>;
+        harvest?: Id<Source>;
         build?: Id<ConstructionSite>;
         upgrade?: Id<StructureController>;
         fill?: Id<FillTarget>;

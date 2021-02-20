@@ -1,10 +1,7 @@
-
-
 type FillTarget = StructureSpawn | StructureExtension;
 type ContainerTarget = StructureContainer | StructureStorage;
 type RepairTarget = Structure;
 type WallRepairTarget = StructureWall | StructureRampart;
-
 type GatherTarget = Source | ContainerTarget | Tombstone | Resource;
 
 

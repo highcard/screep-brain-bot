@@ -6,6 +6,15 @@ interface RepairMemory extends WorkerMemory {
     };
 }
 
+const isRepairMemory = function(x : CreepMemory): x is RepairMemory {
+    return (x as CreepMemory).target !== undefined
+        && (x as CreepMemory).target.repair !== undefined
+        && (x as CreepMemory).idle !== undefined
+        && (x as CreepMemory).working !== undefined
+        && (x as CreepMemory).role !== undefined
+        && (x as CreepMemory).home_room !== undefined;
+}
+
 const get_memory = function(creep : Creep) : RepairMemory {
     return creep.memory as RepairMemory;
 }
@@ -36,4 +45,4 @@ const run = function(creep : Creep) : boolean {
     return true; 
 }    
 
-export {run};
+export {run, isRepairMemory};

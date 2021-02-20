@@ -1,24 +1,24 @@
 /// <reference path="./creepmemory.worker.ts" />
 
-interface BuildMemory extends WorkerMemory {
+interface HarvestMemory extends WorkerMemory {
     target: {
-        build: Id<ConstructionSite>;
-    };
+        harvest: Id<Source>;
+    }
 }
 
-const isBuildMemory = function(x : CreepMemory): x is BuildMemory {
+const isHarvestMemory = function(x : CreepMemory): x is HarvestMemory {
     return (x as CreepMemory).target !== undefined
-        && (x as CreepMemory).target.build !== undefined
+        && (x as CreepMemory).target.harvest !== undefined
         && (x as CreepMemory).idle !== undefined
         && (x as CreepMemory).working !== undefined
         && (x as CreepMemory).role !== undefined
         && (x as CreepMemory).home_room !== undefined;
 }
 
-const get_target = function(creep : Creep) : ConstructionSite {
+const get_target = function(creep : Creep) : Source {
     let memory = creep.memory;
-    if (isBuildMemory(memory)) {
-        let target = Game.getObjectById(memory.target.build);
+    if (isHarvestMemory(memory)) {
+        let target = Game.getObjectById(memory.target.harvest);
         if (!target) {
             return null;
         }
@@ -32,7 +32,7 @@ const run = function(creep : Creep) : boolean {
     if (!target) {
         return false;
     }
-    switch(creep.build(target)) {
+    switch(creep.harvest(target)) {
         case OK:
             break;
         case ERR_NOT_IN_RANGE:
@@ -42,6 +42,6 @@ const run = function(creep : Creep) : boolean {
             break;
     }
     return true;
-}    
+}
 
-export {run, isBuildMemory};
+export {run, isHarvestMemory};

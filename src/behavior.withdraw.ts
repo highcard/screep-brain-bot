@@ -6,17 +6,26 @@ interface WithdrawMemory extends WorkerMemory {
     }
 }
 
-const get_memory = function(creep : Creep) : WithdrawMemory {
-    return creep.memory as WithdrawMemory;
+const isWithdrawMemory = function(x : CreepMemory): x is WithdrawMemory {
+    return (x as CreepMemory).target !== undefined
+        && (x as CreepMemory).target.withdraw !== undefined
+        && (x as CreepMemory).idle !== undefined
+        && (x as CreepMemory).working !== undefined
+        && (x as CreepMemory).role !== undefined
+        && (x as CreepMemory).home_room !== undefined;
 }
 
+
 const get_target = function(creep : Creep) : ContainerTarget {
-    let memory = get_memory(creep);
-    let target = Game.getObjectById(memory.target.withdraw);
-    if (!target) {
-        return null;
+    let memory = creep.memory;
+    if (isWithdrawMemory(memory)) {
+        let target = Game.getObjectById(memory.target.withdraw);
+        if (!target) {
+            return null;
+        }
+        return target;
     }
-    return target;
+    return null;
 }
 
 const run = function(creep : Creep) : boolean {
@@ -46,4 +55,4 @@ const run = function(creep : Creep) : boolean {
     return success;
 }
 
-export {run};
+export {run, isWithdrawMemory};

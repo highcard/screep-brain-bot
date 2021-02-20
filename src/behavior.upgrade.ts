@@ -6,18 +6,25 @@ interface UpgradeMemory extends WorkerMemory {
     };
 }
 
-
-const get_memory = function(creep : Creep) : UpgradeMemory {
-    return creep.memory as UpgradeMemory;
+const isUpgradeMemory = function(x : CreepMemory): x is UpgradeMemory {
+    return (x as CreepMemory).target !== undefined
+        && (x as CreepMemory).target.upgrade !== undefined
+        && (x as CreepMemory).idle !== undefined
+        && (x as CreepMemory).working !== undefined
+        && (x as CreepMemory).role !== undefined
+        && (x as CreepMemory).home_room !== undefined;
 }
 
 const get_target = function(creep : Creep) : StructureController {
-    let memory = get_memory(creep);
-    let target = Game.getObjectById(memory.target.upgrade);
-    if (!target) {
-        return null;
+    let memory = creep.memory;
+    if (isUpgradeMemory(memory)) {
+        let target = Game.getObjectById(memory.target.upgrade);
+        if (!target) {
+            return null;
+        }
+        return target;
     }
-    return target;
+    return null;
 }
 
 const run = function(creep : Creep) : boolean {

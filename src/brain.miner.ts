@@ -1,11 +1,11 @@
-import * as BehaviorMine from "./behavior.mine";
+import * as BehaviorHarvest from "./behavior.harvest";
 import * as BehaviorHaul from "./behavior.haul";
 import * as BehaviorRepair from "./behavior.repair";
 import * as BehaviorBuild from "./behavior.build";
 
 declare interface MinerMemory extends WorkerMemory {
     target: {
-        mine: Id<Source>;
+        harvest: Id<Source>;
         build: Id<ConstructionSite>;
         repair: Id<RepairTarget>;
         haul: Id<ContainerTarget>;
@@ -47,7 +47,7 @@ class BrainMiner {
         if (this.creep.memory.working) {
             BehaviorBuild.run(this.creep) || BehaviorRepair.run(this.creep) || BehaviorHaul.run(this.creep);
         } else {
-            BehaviorMine.run(this.creep);
+            BehaviorHarvest.run(this.creep);
         }
         this.creep.say("⛏");
     }

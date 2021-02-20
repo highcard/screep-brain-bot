@@ -6,6 +6,15 @@ interface FillMemory extends WorkerMemory {
     }
 }
 
+const isFillMemory = function(x : CreepMemory): x is FillMemory {
+    return (x as CreepMemory).target !== undefined
+        && (x as CreepMemory).target.fill !== undefined
+        && (x as CreepMemory).idle !== undefined
+        && (x as CreepMemory).working !== undefined
+        && (x as CreepMemory).role !== undefined
+        && (x as CreepMemory).home_room !== undefined;
+}
+
 const get_memory = function(creep : Creep) : FillMemory {
     return creep.memory as FillMemory;
 }
@@ -36,4 +45,4 @@ const run = function(creep : Creep) : boolean {
     return true;
 }    
     
-export {run};
+export {run, isFillMemory};

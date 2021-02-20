@@ -60,8 +60,7 @@ class BuildManager {
         return new RoomPosition(pos.x, pos.y, pos.roomName);
     }
 
-    // Adds a task to the waitqueue or running depending on whether creeps are assigned or not
-    // RECONSIDER THIS re: waitqueue, scheduled, running etc. 
+    // Adds a task to the waitqueue.
     add_task(objective: string, location: RoomPosition, type: BuildableStructureConstant) {
         console.log('build.manager add_task');
         if (!this.task_accounted_for(location, type)) {
@@ -77,7 +76,7 @@ class BuildManager {
         }
     }
 
-    /*
+    /*W
     *
     * Task/Structure Verification methods
     *
@@ -191,7 +190,6 @@ class BuildManager {
     *
     */
 
-
     run_tasks() {
         // check all running tasks to see if tasks are /co, and flag for termination
         // if they're not complete but don't have site or creeps assigned, move to "scheduled"
@@ -218,7 +216,8 @@ class BuildManager {
             let verified : Array<Id<Creep>> = [];
             for (let c in task.assigned) {
                 let creep : Creep = Game.creeps[task.assigned[c]];
-                if (!creep || (BehaviorBuild.isBuildMemory(creep.memory) ? creep.memory.target.build : "") != task.site) {
+                let creep_mem = Memory.creeps[task.assigned[c]];
+                if (!creep || (BehaviorBuild.isBuildMemory(creep_mem) ? creep_mem.target.build : "") != task.site) {
                     continue;
                 }
                 verified.unshift(task.assigned[c]);
@@ -254,10 +253,7 @@ class BuildManager {
                 this.waitqueue.unshift(task);
             }
         }
-
-        console.log("HIT", checked);
         this.scheduled = checked;
-        console.log("HIT AFTER", this.scheduled);
 
         while (this.scheduled.length > 0 && this.idle_creeps.length > 0) {
             let task : BuildTask = this.scheduled.pop();
@@ -271,6 +267,8 @@ class BuildManager {
             memory.role = "worker";
             memory.home_room = this.room.name;
             console.log("build.manager run_scheduled before build_creep");
+            // TODO: Buggy here. after pushing to running, it's getting kicked back to `schedulued`
+            // 
             if (CreepFactory.build_creep(this.room, "worker", 300, memory) == OK) {
                 this.running.push(task);
             } else {
@@ -302,7 +300,7 @@ class BuildManager {
         this.run_tasks();
         this.run_scheduled();
         this.run_waitqueue();
-        this.write_mem();
+        this.write_mem(); // IMPORTANT
     }
 
 }

@@ -1,5 +1,6 @@
 import CreepControl from "./scheduler.creepcontrol";
 import BootstrapDirector from "./scheduler.bootstrap";
+import {EnergyDirector} from "./energy.manager";
     // Room Memory Init <== Consider moving this elsewhere.
 
 const DIR_NONE = 0;
@@ -89,6 +90,7 @@ function run_rooms() {
         if (Memory.rooms[room].directing) {
             let creepcontrol;
             let director;
+            let energydirector;
             console.log("before switch");
             switch (Memory.rooms[room].directive) {
                 case DIR_NONE:
@@ -97,6 +99,7 @@ function run_rooms() {
                 case DIR_BOOTSTRAP:
                     creepcontrol = new CreepControl(Game.rooms[room]);
                     director = new BootstrapDirector(Game.rooms[room]);
+                    energydirector = new EnergyDirector(Game.rooms[room]);
                     // do something bootstrappy
                     break;
                 case DIR_RESERVE:
@@ -108,6 +111,8 @@ function run_rooms() {
             if (director) director.run();
             console.log("before creepcontrol.run()");
             if (creepcontrol) creepcontrol.run();
+            console.log("before energydirector.run()");
+            if (energydirector) energydirector.run();
         }
     }
     console.log("end of run_rooms()");    

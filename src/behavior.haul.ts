@@ -6,17 +6,25 @@ interface HaulMemory extends WorkerMemory {
     };
 }
 
-const get_memory = function(creep : Creep) : HaulMemory {
-    return creep.memory as HaulMemory;
+const isHaulMemory = function(x : CreepMemory): x is HaulMemory {
+    return (x as CreepMemory).target !== undefined
+        && (x as CreepMemory).target.haul !== undefined
+        && (x as CreepMemory).idle !== undefined
+        && (x as CreepMemory).working !== undefined
+        && (x as CreepMemory).role !== undefined
+        && (x as CreepMemory).home_room !== undefined;
 }
 
 const get_target = function(creep : Creep) : ContainerTarget {
-    let memory = get_memory(creep);
-    let target = Game.getObjectById(memory.target.haul);
-    if (!target) {
-        return null;
+    let memory = creep.memory;
+    if (isHaulMemory(memory)) {
+        let target = Game.getObjectById(memory.target.haul);
+        if (!target) {
+            return null;
+        }
+        return target;
     }
-    return target;
+    return null;
 }
 
 const run = function(creep : Creep) : boolean {
@@ -36,4 +44,4 @@ const run = function(creep : Creep) : boolean {
     return true;
 }    
 
-export {run};
+export {run, isHaulMemory};
