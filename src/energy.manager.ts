@@ -21,6 +21,7 @@ class EnergyDirector {
     creeps : Array<Creep>;
 
     constructor(room : Room) {
+        console.log("energy.manager EnergyDirector constructor");
         this.room = room;
         let containers = this.room.find(FIND_STRUCTURES, 
             {filter: s => s.structureType == STRUCTURE_CONTAINER 
@@ -32,7 +33,8 @@ class EnergyDirector {
                 && s.structureType == STRUCTURE_STORAGE});
         this.storage = storage ? storage[0] as StructureStorage : null; // HACK. FIX THIS.
         this.recycle = null;
-        this.creeps = _.filter(Game.creeps, (c : Creep) => BehaviorHarvest.isHarvestMemory(c.memory) ? c.memory.home_room == this.room.name && c.memory.role == "worker" : false);
+        this.creeps = _.filter(Game.creeps, (c : Creep) => BehaviorHarvest.isHarvestMemory(c.memory) ? (c.memory.home_room == this.room.name && c.memory.role == "worker") : false);
+        console.log(this.creeps); // this.creeps is returning an empty array. troubleshoot
     }
 
     run() {
