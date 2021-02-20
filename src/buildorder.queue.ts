@@ -1,5 +1,6 @@
 import {ObjectiveBootup} from "./objective.bootupworker";
 import {ObjectiveMining} from "./objective.mining";
+import {ObjectiveBuildTest} from "./objective.buildtest";
 
 /// <reference path="./builorder.command" />
 
@@ -19,6 +20,9 @@ export default class BuildQueue {
                 break;
             case "mining":
                 build_command = new ObjectiveMining(room, cmd);
+                break;
+            case "buildtest":
+                build_command = new ObjectiveBuildTest(room, cmd);
                 break;
             default:
                 build_command = null;

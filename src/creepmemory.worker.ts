@@ -7,7 +7,9 @@ declare interface CreepMemory {
         type: WorkType;
         id: string;
     }
-    target?: object;
+    target?: {
+        [key: string]: Id<RoomObject>;
+    };
 }
 
 declare interface WorkerMemory extends CreepMemory {
@@ -29,10 +31,4 @@ declare interface WorkerMemory extends CreepMemory {
         withdraw?: Id<ContainerTarget>;
         haul?: Id<ContainerTarget>;
     }
-}
-
-function isWorkerMemory(x : CreepMemory): x is CreepMemory {
-    return (x as CreepMemory).target !== undefined 
-        && (x as CreepMemory).idle !== undefined
-        && (x as CreepMemory).task !== undefined
 }

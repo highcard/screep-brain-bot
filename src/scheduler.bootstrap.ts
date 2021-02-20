@@ -13,6 +13,7 @@ export default class BootStrapDirector {
         // This should be moved out of run()
         let rcl_1 = [
             "bootupworker",
+            "buildtest"
         ];
         // End move out of run();
 

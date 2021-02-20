@@ -7,9 +7,12 @@ interface BuildMemory extends WorkerMemory {
 }
 
 const isBuildMemory = function(x : CreepMemory): x is BuildMemory {
-    if (isWorkerMemory(x)) {
-        return (x as WorkerMemory).target.build !== undefined;        
-    }
+    return (x as CreepMemory).target !== undefined
+        && (x as CreepMemory).target.build !== undefined
+        && (x as CreepMemory).idle !== undefined
+        && (x as CreepMemory).working !== undefined
+        && (x as CreepMemory).role !== undefined
+        && (x as CreepMemory).home_room !== undefined;
 }
 
 const get_memory = function(creep : Creep) : BuildMemory {

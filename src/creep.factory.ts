@@ -50,12 +50,12 @@ export default class CreepFactory {
    public static build_creep(room : Room, body_profile : string, energy: number, memory? : CreepMemory): number {
         let spawns = room.find(FIND_MY_SPAWNS, {filter: s => s.isActive() && !s.spawning});
         if (spawns.length == 0) {
-            return null;
+            return -99; // TEMP HACK FIX THIS.
         };
         let spawn = spawns[0];
         let body = this.get_body(body_profile, energy);
         if (!body) {
-            return null
+            return -99 // TEMP HACK FIX THIS.
         };
         let name = this.generate_creep_name(room, body_profile);
         let retval = spawn.spawnCreep(body, name, {
