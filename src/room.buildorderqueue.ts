@@ -33,24 +33,33 @@ export default class BuildQueue {
                 build_command = ObjectiveUpgradeContainer;
                 console.log("registered upgrade_container");
                 break;
+            case "build_containers":
+                build_command = null;
+                console.log("NOOP - Registered build_containers");
+                break
             case "buildtest":
-                build_command = ObjectiveBuildTest;
+                // build_command = ObjectiveBuildTest;
                 console.log("registered buildtest")
                 break;
             default:
                 build_command = null;
+                console.log("invalid command");
         }
         return build_command;
     }
 
-    run() {
+    run(room : Room) {
         while (this.queue.length > 0) {
-            let cmd = this.queue.shift();
-            if (cmd.satisfied()) {
+            let opts = this.queue.shift();
+            let cmd : BuildCommand = this.getDirective(opts);
+            if (!cmd) {
                 continue;
             }
-            if (cmd.prereq()) {
-                cmd.run();
+            if (cmd.satisfied(room, opts)) {
+                continue;
+            }
+            if (cmd.prereq(room, opts)) {
+                cmd.run(room, opts);
             } else {
                 break;
             }

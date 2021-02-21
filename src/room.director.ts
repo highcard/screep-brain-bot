@@ -23,7 +23,7 @@ function scan_visible_rooms() {
     if (Game.rooms["sim"] != undefined) {
         scan_room("sim", true);
     } else {
-        for (let roomKey in Game.rooms) {
+        for (let roomkey in Game.rooms) {
             scan_room(roomkey);
         }
     }
@@ -49,6 +49,7 @@ function scan_room(room_name : string, reset=false) {
 
 function scan_sources(room : Room, reset : boolean = false) {
     if (reset || room.memory.sources == undefined) {
+        let rv = new RoomVisual(room.name);
         room.memory.sources = [] as Array<SourceEntry>;
         let source_mem : Array<SourceEntry> = [];
         let sources = room.find(FIND_SOURCES);
@@ -64,6 +65,10 @@ function scan_sources(room : Room, reset : boolean = false) {
                     x: harvest_spots[spot].x, 
                     y: harvest_spots[spot].y
                 });
+            }
+            if (harvest_spots.length > 0) {
+                source_memory_entry.container = harvest_spots[0];
+                rv.circle(new RoomPosition(harvest_spots[0].x, harvest_spots[0].y, room.name) , {fill: "#66ccff"})
             }
             room.memory.sources.push(source_memory_entry);
         }
@@ -96,20 +101,23 @@ function scan_controller(room : Room, reset : boolean = false) {
             id: room.controller.id,
             container: null
         };
-        let upgrade_spots : Array<HarvestSpot> = get_controller_container_spots(room.controller);
+        let upgrade_spots : Array<RoomPosition> = get_controller_container_spots(room.controller);
         let best_spot: RoomPosition = null;
         let best_cost: number = Infinity;
         for (let s in upgrade_spots) {
-            let pos = new RoomPosition(upgrade_spots[s].x, upgrade_spots[s].y, room.name);
-            let cur_spot = upgrade_spots[s];
-            let cur_cost = 0;
-            for (let s in room.memory.sources) {
-                let source_entry = room.memory.sources[s];
+            let pos : RoomPosition = upgrade_spots[s];
+            let cur_cost : number = 0;
+            for (let source in room.memory.sources) {
+                let source_entry = room.memory.sources[source];
+                if (!source_entry.container) {
+                    continue;
+                }
                 let source_container = new RoomPosition(source_entry.container.x, source_entry.container.y, room.name);
                 cur_cost += PathFinder.search(pos, source_container).cost;
             }
             if (cur_cost < best_cost) {
                 best_spot = pos;
+                best_cost = cur_cost;
             }
         }
         if (best_spot) {
@@ -163,7 +171,7 @@ function get_harvest_spots(source : Source) : Array<HarvestSpot> {
     return sites;
 }
 
-function get_controller_container_spots(controller : StructureController) {
+function get_controller_container_spots(controller : StructureController) : Array<RoomPosition> {
     let rv = new RoomVisual(controller.room.name);
     let terrain = controller.room.getTerrain();
     let variance = [-1, 0, 1];
@@ -224,14 +232,13 @@ function evaluate_room(room) {
 */
 
 function run_rooms() {
-    console.log("begin run_rooms");
+    console.log("room.director begin run_rooms");
     for (let room in Memory.rooms) {
-        console.log(room);
         if (Memory.rooms[room].directing) {
             let creepcontrol;
             let director;
             let energydirector;
-            console.log("before switch");
+            console.log("room.director before switch");
             switch (Memory.rooms[room].directive) {
                 case DIR_NONE:
                     // do nothing
@@ -246,11 +253,11 @@ function run_rooms() {
                 case DIR_COLONIZE:
                     break;
             }
-            console.log("before director.run()");
+            console.log("room.director before director.run()");
             if (director) director.run();
-            console.log("before energydirector.run()");
+            console.log("room.director before energydirector.run()");
              if (energydirector) energydirector.run();
-            console.log("before creepcontrol.run()");
+            console.log("room.director before creepcontrol.run()");
             if (creepcontrol) creepcontrol.run();
         }
     }

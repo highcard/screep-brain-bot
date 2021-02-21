@@ -31,6 +31,7 @@ export default class BootStrapDirector {
         // Miners
         for (let s in this.room.memory.sources) {
             let source_entry = this.room.memory.sources[s];
+            console.log("directive.bootstrap queueing miners", source_entry);
             if (source_entry.container == null) {
                 source_entry.container = source_entry.spots[0]; // figure this out later if important
             }
@@ -41,11 +42,11 @@ export default class BootStrapDirector {
             queue.addCmd(this.room, mining_options); // Miner builds own container
         }
 
-        let controller_container_options = {
-            objective: "controller_container"
+        let upgrade_container = {
+            objective: "upgrade_container"
         }
 
-        queue.addCmd(this.room, controller_container_options);
+        queue.addCmd(this.room, upgrade_container);
 
         // for each source
             // check each sourceposition
@@ -94,7 +95,7 @@ export default class BootStrapDirector {
 
 
 
-        queue.run();
+        queue.run(this.room);
         console.log("scheduler.bootstarap after queue.run()");
     }
 

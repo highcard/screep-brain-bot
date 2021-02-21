@@ -37,7 +37,6 @@ export default class CreepControl {
                 case "hauler":
                     creep_brain = new BrainHauler(creep);
                     break;
-                    break;
                 default:
                     found = false;
             }

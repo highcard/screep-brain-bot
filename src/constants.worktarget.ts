@@ -34,7 +34,7 @@ export const default_workermemory = {
 }
 
 export const default_minermemory = {
-    role: null,
+    role: "miner",
     home_room: null,
     working: false,
     idle: true,
