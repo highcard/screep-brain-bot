@@ -13,20 +13,19 @@ const DIR_COLONIZE = 3;
 
 /*
 *
-*
-*
-*
-*
+* Scan_Visible_rooms is entry-point for all scanning
+* Each scan_* function stores world data, and container-placements if applicable
 *
 */
 
 function scan_visible_rooms() {
     Memory.rooms = Memory.rooms || {};
-    // for (let roomKey in Game.rooms) {
-    //     scan_room(roomkey);
-    // }
     if (Game.rooms["sim"] != undefined) {
         scan_room("sim", true);
+    } else {
+        for (let roomKey in Game.rooms) {
+            scan_room(roomkey);
+        }
     }
 }
 
