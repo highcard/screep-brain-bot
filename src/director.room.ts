@@ -97,10 +97,9 @@ function run_rooms() {
                     // do nothing
                     break;
                 case DIR_BOOTSTRAP:
-                    creepcontrol = new CreepControl(Game.rooms[room]);
                     director = new BootstrapDirector(Game.rooms[room]);
                     energydirector = new EnergyDirector(Game.rooms[room]);
-                    // do something bootstrappy
+                    creepcontrol = new CreepControl(Game.rooms[room]);
                     break;
                 case DIR_RESERVE:
                     break;
@@ -110,7 +109,7 @@ function run_rooms() {
             console.log("before director.run()");
             if (director) director.run();
             console.log("before energydirector.run()");
-            if (energydirector) energydirector.run();            
+             if (energydirector) energydirector.run();
             console.log("before creepcontrol.run()");
             if (creepcontrol) creepcontrol.run();
         }

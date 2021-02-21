@@ -22,7 +22,7 @@ export const default_workermemory = {
         id: null,
     },
     target: {
-        mine: null,
+        harvest: null,
         build: null,
         upgrade: null,
         fill: null,
@@ -43,7 +43,7 @@ export const default_minermemory = {
         id: null,
     },
     target: {
-        mine: null,
+        harvest: null,
         build: null,
         repair: null,
         haul: null,

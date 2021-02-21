@@ -67,7 +67,7 @@ class ObjectiveBootup implements BuildCommand {
         memory.task.id = this.cmd;
         memory.idle = false;
         memory.task.type = _W.PUTTARGET_FILL;
-        memory.target.mine = this.room.memory.sources[0], // considering optimizing
+        memory.target.harvest = this.room.memory.sources[0], // considering optimizing
         memory.target.fill = this.room.find(FIND_MY_SPAWNS)[0].id // figure out how to get specific spawn id
         return memory;
     }

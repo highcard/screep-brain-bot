@@ -45,4 +45,4 @@ const run = function(creep : Creep) : boolean {
     return true; 
 }    
 
-export {run};
+export {run, isWallRepairMemory};

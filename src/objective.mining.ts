@@ -47,7 +47,7 @@ class ObjectiveMining implements BuildCommand {
         memory.role = "miner";
         memory.home_room = this.room.name;
         memory.task.id = this.cmd;
-        memory.target.mine = this.room.memory.sources[0]; // considering optimizing
+        memory.target.harvest = this.room.memory.sources[0]; // considering optimizing
         return memory;
     }
 

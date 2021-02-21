@@ -42,12 +42,16 @@ class EnergyDirector {
             let creep = this.creeps[c];
             let creep_mem = creep.memory;
             if (BehaviorWithdraw.isWithdrawMemory(creep_mem)) {
+                console.log("hit after withdraw typeguard");
                 if (creep_mem.target.withdraw != null) {
+                    console.log("continuing withdraw");
                     continue;
                 }
             }
             if (BehaviorHarvest.isHarvestMemory(creep_mem)) {
-                if (creep_mem.target.harvest == null) {
+                console.log("hit after harvest typeguard");
+                if (creep_mem.target.harvest != null) {
+                    console.log("continuing harvest");
                     continue;
                 }
             }
@@ -132,6 +136,7 @@ class EnergyDirector {
     }
 
     fetch_energy(creep) {
+        console.log("fetch_energy hit");
         return this.set_get_target_container(creep) || this.set_get_target_source(creep);
     }
 

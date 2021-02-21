@@ -30,10 +30,10 @@ const get_target = function(creep : Creep) : ContainerTarget {
 
 const run = function(creep : Creep) : boolean {
     let target = get_target(creep);
-    let success = false;
     if (!target) {
-        return success;
+        return false;
     }
+    console.log("hit withdraw");
     let ground_energy = target.pos.lookFor(LOOK_ENERGY).sort((a,b)=> b.amount - a.amount);
     let retval;
     if (ground_energy.length > 0 && ground_energy[0].amount > 0) {
@@ -43,16 +43,14 @@ const run = function(creep : Creep) : boolean {
     }
     switch (retval) {
         case OK:
-            success = true;
             break;
         case ERR_NOT_IN_RANGE:
             creep.moveTo(target);
-            success = true;
             break;
         default:
             break;
     }
-    return success;
+    return true;
 }
 
 export {run, isWithdrawMemory};
