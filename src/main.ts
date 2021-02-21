@@ -2,8 +2,8 @@
 
 import * as Debugger from "./utils.debug";
 
-import * as WorldMapControl from "./director.worldmap";
-import * as RoomDirector from "./director.room";
+import * as WorldMapControl from "./worldmap.director";
+import * as RoomDirector from "./room.director";
 import {cleanup_creeps} from "./memory.creeps";
 
 

@@ -1,5 +1,6 @@
 import { BrainWorker } from "./brain.worker";
-import { BrainMiner } from './brain.miner';
+import { BrainMiner } from "./brain.miner";
+import { BrainHauler } from "./brain.hauler";
 
 
 export default class CreepControl {
@@ -34,8 +35,8 @@ export default class CreepControl {
                     creep_brain = new BrainMiner(creep);
                     break;
                 case "hauler":
-                    // NOT IMPLEMENTED
-                    // creep_brain = new BrainHauler(creep);
+                    creep_brain = new BrainHauler(creep);
+                    break;
                     break;
                 default:
                     found = false;

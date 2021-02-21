@@ -37,16 +37,6 @@ interface MineralRecord {
     density: number;
 }
 
-interface RoomMemory {
-    directing?: boolean;
-    directive?: number; // UPDATE THIS WITH TYPE CONSTANTS
-    spawns?: Array<Id<StructureSpawn>>;
-    my?: boolean;
-    owner?: string;
-    controller?: Id<StructureController>;
-    minerals?: Array<MineralRecord>;
-    sources?: Array<string>;
-}
 
 interface Memory {
     BuildOrder: any; // TODO: SPECIFY

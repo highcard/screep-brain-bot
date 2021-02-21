@@ -1,36 +1,46 @@
 import {ObjectiveBootup} from "./objective.bootupworker";
 import {ObjectiveMining} from "./objective.mining";
 import {ObjectiveBuildTest} from "./objective.buildtest";
+import {ObjectiveUpgradeContainer} from "./objective.upgradecontainer";
 
 /// <reference path="./builorder.command" />
 
+
 export default class BuildQueue {
 
-    queue: Array<BuildCommand>; 
+    queue: Array<CommandOptions>; 
 
     constructor() {
         this.queue = [];
     }
 
-    addCmd(room : Room, cmd : string) {
+    addCmd(room : Room, cmd : CommandOptions) {
+        this.queue.push(cmd);
+    }
+
+    getDirective(cmd : CommandOptions) : BuildCommand {
         let build_command;
-        switch(cmd) {
+        switch(cmd.objective) {
             case "bootupworker":
-                build_command = new ObjectiveBootup(room, cmd);
+                build_command = ObjectiveBootup;
+                console.log("registred bootupworker");
                 break;
             case "mining":
-                build_command = new ObjectiveMining(room, cmd);
+                build_command = ObjectiveMining;
+                console.log("registered mining");
+                break;
+            case "upgrade_container":
+                build_command = ObjectiveUpgradeContainer;
+                console.log("registered upgrade_container");
                 break;
             case "buildtest":
-                build_command = new ObjectiveBuildTest(room, cmd);
+                build_command = ObjectiveBuildTest;
+                console.log("registered buildtest")
                 break;
             default:
                 build_command = null;
         }
-        if (build_command == null) {
-            return;
-        }
-        this.queue.push(build_command);
+        return build_command;
     }
 
     run() {
